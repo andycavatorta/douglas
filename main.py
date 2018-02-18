@@ -15,7 +15,7 @@ THIRTYBIRDS_PATH = "%s/thirtybirds_2_0" % (UPPER_PATH )
 sys.path.append(BASE_PATH)
 sys.path.append(UPPER_PATH)
 
-from thirtybirds_2_0.Adaptors.Actuators import init as stepper_pulses
+from thirtybirds_2_0.Adaptors.Actuators import stepper_pulses
 
 stepper_motor_channels = [
     {
