@@ -39,5 +39,3 @@ stepper_pulses.init(stepper_motor_channels)
 
 stepper_pulses.set("left_wheel", "speed", 1.0)
 stepper_pulses.set("left_wheel", "steps", 800)
-stepper_pulses.set("left_wheel", "speed", -1.0)
-stepper_pulses.set("left_wheel", "steps", 800)
