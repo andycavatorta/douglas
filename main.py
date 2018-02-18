@@ -28,7 +28,7 @@ stepper_motor_channels = [
     }
 ]
 
-stepper_pulses.init()
+stepper_pulses.init(stepper_motor_channels)
 
 
 
