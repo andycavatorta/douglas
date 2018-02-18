@@ -4,7 +4,7 @@
 
 import importlib
 import os
-import settings
+#import settings
 import sys
 import time
 
