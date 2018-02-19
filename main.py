@@ -20,6 +20,9 @@ from thirtybirds_2_0.Adaptors.Actuators import stepper_pulses
 def left_wheel_callback():
     print "left_wheel_callback"
 
+def right_wheel_callback():
+    print "right_wheel_callback"
+
 
 
 
@@ -31,11 +34,23 @@ stepper_motor_channels = [
         "base_pulse_period":0.0005,
         "steps_finished_callback":left_wheel_callback,
         "backwards_orientation":False,
+    },
+
+    {
+        "name":"right_wheel",
+        "pulse_pin":21,
+        "dir_pin":20,
+        "base_pulse_period":0.0005,
+        "steps_finished_callback":right_wheel_callback,
+        "backwards_orientation":True,
     }
 ]
 
 stepper_pulses.init(stepper_motor_channels)
 
 
-stepper_pulses.set("left_wheel", "speed", 1.0)
-stepper_pulses.set("left_wheel", "steps", 800)
+stepper_pulses.set("left_wheel", "speed", 0.2)
+stepper_pulses.set("left_wheel", "speed", 0.2)
+
+stepper_pulses.set("right_wheel", "steps", 800)
+stepper_pulses.set("right_wheel", "steps", 800)
