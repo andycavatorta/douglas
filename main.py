@@ -152,27 +152,27 @@ class Coordinates_To_Vectors(object):
         # calculate absolute heading relative to Cartesian space, not relative to bot
         if self.current_x == target_x and self.current_y == target_y: # no movement
             return (0.0, 0.0)
-        else if self.current_x < target_x and self.current_y == target_y: # x-axis positive
+        elif self.current_x < target_x and self.current_y == target_y: # x-axis positive
             return (distance, 0.0)
-        else if self.current_x > target_x and self.current_y == target_y:: # x-axis negative
+        elif self.current_x > target_x and self.current_y == target_y:: # x-axis negative
             return (distance, 180.0)
-        else if self.current_x == target_x and self.current_y < target_y: # y-axis positive
+        elif self.current_x == target_x and self.current_y < target_y: # y-axis positive
             return (distance, 90.0)
-        else if self.current_x == target_x and self.current_y > target_y: # y-axis negative
+        elif self.current_x == target_x and self.current_y > target_y: # y-axis negative
             return (distance, -90.0)
-        else if self.current_x < target_x and self.current_y < target_y: # somewhere in quadrant 1
+        elif self.current_x < target_x and self.current_y < target_y: # somewhere in quadrant 1
             target_angle_relative_to_Cartesian_space =  math.degrees(math.acos( abs(target_x-self.current_x) / distance) )
             return (distance, target_angle_relative_to_Cartesian_space)
-        else if self.current_x > target_x and self.current_y < target_y: # somewhere in quadrant 2
+        elif self.current_x > target_x and self.current_y < target_y: # somewhere in quadrant 2
             target_angle_relative_to_Cartesian_space =  90 + math.degrees(math.acos( abs(target_x-self.current_x) / distance) )
             return (distance, target_angle_relative_to_Cartesian_space)
-        else if self.current_x > target_x and self.current_y > target_y: # somewhere in quadrant 3
+        elif self.current_x > target_x and self.current_y > target_y: # somewhere in quadrant 3
             target_angle_relative_to_Cartesian_space =  180 + math.degrees(math.acos( abs(target_x-self.current_x) / distance) )
             return (distance, target_angle_relative_to_Cartesian_space)
-        else if self.current_x < target_x and self.current_y > target_y: # somewhere in quadrant 4
+        elif self.current_x < target_x and self.current_y > target_y: # somewhere in quadrant 4
             target_angle_relative_to_Cartesian_space =  270 + math.degrees(math.acos( abs(target_x-self.current_x) / distance) )
             return (distance, target_angle_relative_to_Cartesian_space)
-        else if :
+        elif :
             print "Coordinates_To_Vectors.calculate_vectors_from_target_coordinates cannot assign quadrant", self.current_x, target_x, self.current_y, target_y
 
     def convert(self, target_x, target_y):
