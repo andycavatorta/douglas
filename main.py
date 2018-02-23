@@ -154,7 +154,7 @@ class Coordinates_To_Vectors(object):
             return (0.0, 0.0)
         elif self.current_x < target_x and self.current_y == target_y: # x-axis positive
             return (distance, 0.0)
-        elif self.current_x > target_x and self.current_y == target_y:: # x-axis negative
+        elif self.current_x > target_x and self.current_y == target_y: # x-axis negative
             return (distance, 180.0)
         elif self.current_x == target_x and self.current_y < target_y: # y-axis positive
             return (distance, 90.0)
