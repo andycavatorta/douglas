@@ -172,7 +172,7 @@ class Coordinates_To_Vectors(object):
         elif self.current_x < target_x and self.current_y > target_y: # somewhere in quadrant 4
             target_angle_relative_to_Cartesian_space =  270 + math.degrees(math.acos( abs(target_x-self.current_x) / distance) )
             return (distance, target_angle_relative_to_Cartesian_space)
-        elif :
+        else :
             print "Coordinates_To_Vectors.calculate_vectors_from_target_coordinates cannot assign quadrant", self.current_x, target_x, self.current_y, target_y
 
     def convert(self, target_x, target_y):
