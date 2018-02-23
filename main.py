@@ -61,7 +61,7 @@ class Vectors_To_Pulses(object):
         self.circumference_of_rotation = self.distance_between_wheels * math.pi
         self.speed = 0.0
 
-    def rotate(self, degrees, speed = self.speed):
+    def rotate(self, degrees, speed):
         self.speed = Float(abs(speed))
         proportion_of_circle = Float(abs(degrees)) / 360.0
         length_of_arc = proportion_of_circle * self.circumference_of_rotation
@@ -78,7 +78,7 @@ class Vectors_To_Pulses(object):
             }
         }
 
-    def roll(self, distance, speed = self.speed): # distance units are in mm
+    def roll(self, distance, speed): # distance units are in mm
         self.speed = Float(abs(speed)) if distance > 0 else Float(abs(-speed))
         number_of_wheel_rotations = abs(distance) / self.wheel_circumference
         number_of_pulses = number_of_wheel_rotations * self.steps_per_rotation
