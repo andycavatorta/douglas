@@ -181,6 +181,7 @@ class Coordinates_To_Vectors(object):
         self.target_orientation = target_angle_relative_to_Cartesian_space
         self.target_x = target_x
         self.target_y = target_y
+        self.update_coordinates_from_reckoning()
         return target_distance, target_angle_relative_to_bot
 
 
