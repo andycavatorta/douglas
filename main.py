@@ -17,15 +17,6 @@ sys.path.append(UPPER_PATH)
 
 from thirtybirds_2_0.Adaptors.Actuators import stepper_pulses
 
-
-
-
-
-
-
-
-
-
 def left_wheel_callback():
     print "left_wheel_callback"
 
@@ -60,13 +51,12 @@ class Vectors_To_Pulses(object):
         self.steps_per_rotation = steps_per_rotation
         self.circumference_of_rotation = self.distance_between_wheels * math.pi
         self.speed = 0.0
-
     def rotate(self, degrees, speed):
-        self.speed = Float(abs(speed))
-        proportion_of_circle = Float(abs(degrees)) / 360.0
+        self.speed = float(abs(speed))
+        proportion_of_circle = float(abs(degrees)) / 360.0
         length_of_arc = proportion_of_circle * self.circumference_of_rotation
         pulses_of_arc = length_of_arc * self.steps_per_rotation
-        left_speed, right_speed = speed, -speed if degrees > 0 else -speed, speed
+        left_speed, right_speed = (speed, -speed) if degrees > 0 else (-speed, speed)
         return {
             "left_wheel":{
                 "speed":left_speed, 
@@ -77,9 +67,8 @@ class Vectors_To_Pulses(object):
                 "steps":pulses_of_arc
             }
         }
-
     def roll(self, distance, speed): # distance units are in mm
-        self.speed = Float(abs(speed)) if distance > 0 else Float(abs(-speed))
+        self.speed = float(abs(speed)) if distance > 0 else float(abs(-speed))
         number_of_wheel_rotations = abs(distance) / self.wheel_circumference
         number_of_pulses = number_of_wheel_rotations * self.steps_per_rotation
         return {
@@ -92,21 +81,6 @@ class Vectors_To_Pulses(object):
                 "steps":number_of_pulses
             }
         }
-
-
-"""
-vectors_to_pulses = Vectors_To_Pulses(25.4 * math.pi, 215.0, 1600)
-    pulse_info = vectors_to_pulses.rotate(360, 1)
-    stepper_pulses.set("left_wheel", "speed", pulse_info["left_wheel"]["speed"])
-    stepper_pulses.set("left_wheel", "steps", pulse_info["left_wheel"]["steps"])
-    stepper_pulses.set("right_wheel", "speed", pulse_info["right_wheel"]["speed"])
-    stepper_pulses.set("right_wheel", "steps", pulse_info["right_wheel"]["steps"])
-
-stepper_pulses.set("left_wheel", "speed", -1.0)
-stepper_pulses.set("right_wheel", "speed", -1.0)
-stepper_pulses.set("left_wheel", "steps", 10000)
-stepper_pulses.set("right_wheel", "steps", 10000)
-"""
 
 class Path_Collection(object):
     def __init__(self):
@@ -185,3 +159,32 @@ class Coordinates_To_Vectors(object):
         return target_distance, target_angle_relative_to_bot
 
 
+path_collection = Path_Collection()
+coordinates_to_vectors = Coordinates_To_Vectors()
+vectors_to_pulses = Vectors_To_Pulses(25.4 * math.pi, 215.0, 1600)
+
+test_path_collection = [
+    [5, 5],
+    [-5, 5],
+    [-5, -5],
+    [5, -5],
+    [0,0],
+    [0,0]
+]
+
+
+def test():
+    path_collection.load_path_collection(test_path_collection)
+    for i in range(len(test_path_collection)-1):
+        x, y = path_collection.get_next_path()
+        distance, angle = coordinates_to_vectors.convert(x, y)
+        print distance, angle
+        pulse_info = vectors_to_pulses.rotate(angle, 1.0)
+        print pulse_info
+        stepper_pulses.set("left_wheel", "steps", pulse_info["left_wheel"]["steps"])
+        stepper_pulses.set("right_wheel", "steps", pulse_info["right_wheel"]["steps"])
+        pulse_info = vectors_to_pulses.roll(distance, 1.0)
+        stepper_pulses.set("left_wheel", "steps", pulse_info["left_wheel"]["steps"])
+        stepper_pulses.set("right_wheel", "steps", pulse_info["right_wheel"]["steps"])
+        print pulse_info
+        time.sleep(10)
