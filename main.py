@@ -163,10 +163,10 @@ coordinates_to_vectors = Coordinates_To_Vectors()
 vectors_to_pulses = Vectors_To_Pulses(25.4 * math.pi, 215.0, 1600)
 
 test_path_collection = [
-    [50, 50],
-    [-50, 50],
-    [-50, -50],
-    [50, -50],
+    [5, 5],
+    [-5, 5],
+    [-5, -5],
+    [5, -5],
     [0,0],
     [0,0]
 ]
