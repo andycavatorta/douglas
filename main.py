@@ -27,15 +27,15 @@ stepper_motor_channels = [
     {
         "name":"left_wheel",
         "pulse_pin":26,
-        "dir_pin":6,
+        "dir_pin":20,
         "base_pulse_period":0.0005,
         "steps_finished_callback":left_wheel_callback,
         "backwards_orientation":False,
     },
     {
         "name":"right_wheel",
-        "pulse_pin":21,
-        "dir_pin":20,
+        "pulse_pin":19,
+        "dir_pin":16,
         "base_pulse_period":0.0005,
         "steps_finished_callback":right_wheel_callback,
         "backwards_orientation":True,
@@ -139,7 +139,7 @@ class Coordinates_To_Vectors(object):
             return (distance, target_angle_relative_to_Cartesian_space)
         elif self.current_x > target_x and self.current_y < target_y: # somewhere in quadrant 2
             target_angle_relative_to_Cartesian_space =  90 + math.degrees(math.acos( abs(target_x-self.current_x) / distance) )
-            return (distance, target_angle_relative_to_Cartesian_space)
+            return (distance, target_angle_relative_to_Cartesian_space)z
         elif self.current_x > target_x and self.current_y > target_y: # somewhere in quadrant 3
             target_angle_relative_to_Cartesian_space =  180 + math.degrees(math.acos( abs(target_x-self.current_x) / distance) )
             return (distance, target_angle_relative_to_Cartesian_space)
@@ -158,23 +158,23 @@ class Coordinates_To_Vectors(object):
         self.update_coordinates_from_reckoning()
         return target_distance, target_angle_relative_to_bot
 
-
 path_collection = Path_Collection()
 coordinates_to_vectors = Coordinates_To_Vectors()
 vectors_to_pulses = Vectors_To_Pulses(25.4 * math.pi, 215.0, 1600)
 
 test_path_collection = [
-    [5, 5],
-    [-5, 5],
-    [-5, -5],
-    [5, -5],
+    [50, 50],
+    [-50, 50],
+    [-50, -50],
+    [50, -50],
     [0,0],
     [0,0]
 ]
 
-
 def test():
     path_collection.load_path_collection(test_path_collection)
+    stepper_pulses.set("left_wheel", "speed", 1.0)
+    stepper_pulses.set("right_wheel", "speed", 1.0)
     for i in range(len(test_path_collection)-1):
         x, y = path_collection.get_next_path()
         distance, angle = coordinates_to_vectors.convert(x, y)
@@ -184,7 +184,8 @@ def test():
         stepper_pulses.set("left_wheel", "steps", pulse_info["left_wheel"]["steps"])
         stepper_pulses.set("right_wheel", "steps", pulse_info["right_wheel"]["steps"])
         pulse_info = vectors_to_pulses.roll(distance, 1.0)
+        time.sleep(30)
         stepper_pulses.set("left_wheel", "steps", pulse_info["left_wheel"]["steps"])
         stepper_pulses.set("right_wheel", "steps", pulse_info["right_wheel"]["steps"])
         print pulse_info
-        time.sleep(10)
+        time.sleep(30)
