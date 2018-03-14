@@ -3,8 +3,10 @@
 ######################
 
 import importlib
+import json
 import os
 import math
+import settings
 import sys
 import time
 
@@ -15,6 +17,55 @@ THIRTYBIRDS_PATH = "%s/thirtybirds_2_0" % (UPPER_PATH )
 sys.path.append(BASE_PATH)
 sys.path.append(UPPER_PATH)
 
+from thirtybirds_2_0.Network.info import init as network_info_init
+network_info = network_info_init()
+args = sys.argv # Could you actually get anything to happen without this?
+
+def get_hostname():
+    global args
+    try:
+        pos = args.index("-n") # pull hostname from command line argument, if there is one
+        hostname = args[pos+1]
+    except Exception as E:
+        hostname = network_info.getHostName()
+    return hostname
+
+HOSTNAME = get_hostname()
+
+####################
+### PAUSE UNTIL ONLINE  ###
+####################
+
+PAUSE_UNTIL_ONLINE_MAX_SECONDS = 30
+
+def pause_until_online(max_seconds):
+    for x in range(max_seconds):
+        if network_info.getOnlineStatus():
+            print "got connection!"
+            break
+        else:
+            print "waiting for connection..."
+            time.sleep(1)
+
+pause_until_online(PAUSE_UNTIL_ONLINE_MAX_SECONDS)
+
+#########################
+### LOAD DEVICE-SPECIFIC CODE ###
+#########################
+
+if HOSTNAME in settings.bot_names:
+    role = "bot"
+
+elif HOSTNAME in settings.server_names:
+    role = "controller"
+
+elif HOSTNAME in settings.dashboard_names:
+    role = "dashboard"
+
+host = importlib.import_module("Roles.%s.main" % (role))
+client = host.init(HOSTNAME)
+
+"""
 from thirtybirds_2_0.Adaptors.Actuators import stepper_pulses
 
 def left_wheel_callback():
@@ -99,6 +150,7 @@ class Path_Collection(object):
             return False
 
 class Coordinates_To_Vectors(object):
+
     def __init__(self):
         self.current_x = 0
         self.current_y = 0
@@ -171,6 +223,9 @@ test_path_collection = [
     [0,0]
 ]
 
+def interpret_commands(action, value, speed = 1.0): # ["roll" | "rotate" | "brush" ]
+
+
 def test():
     path_collection.load_path_collection(test_path_collection)
     stepper_pulses.set("left_wheel", "speed", 1.0)
@@ -189,3 +244,5 @@ def test():
         stepper_pulses.set("right_wheel", "steps", pulse_info["right_wheel"]["steps"])
         print pulse_info
         time.sleep(30)
+
+"""
