@@ -9,7 +9,7 @@ import sys
 
 from thirtybirds_2_0.Network.manager import init as network_init
 from thirtybirds_2_0.Updates.manager import init as updates_init
-from thirtybirds_2_0.PiUtils.management import init as management_init
+from thirtybirds_2_0.PiUtils.management import init as management
 #from thirtybirds_2_0.Adaptors.Sensors import MPR121
 
 class Network(object):
@@ -51,7 +51,7 @@ class Main(threading.Thread):
         threading.Thread.__init__(self)
         self.network = Network(hostname, self.network_message_handler, self.network_status_handler)
         self.queue = Queue.Queue()
-        self.utils = Utils(hostname)
+        self.management = management
         self.network.thirtybirds.send("client_present", hostname)
         self.network.thirtybirds.subscribe_to_topic("client_monitor_request")
 
@@ -74,9 +74,9 @@ class Main(threading.Thread):
             try:
                 topic, msg = self.queue.get(True)
                 if topic == "client_monitor_request":
-                    self.network.thirtybirds.send("client_monitor_response", self.utils.get_client_status())
+                    self.network.thirtybirds.send("client_monitor_response", self.management.get_client_status())
                 if topic == "reboot":
-                    self.utils.reboot()
+                    self.management.reboot()
 
 
             except Exception as e:
