@@ -318,8 +318,6 @@ class Path_Server(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.queue = Queue.Queue()
-        print ">>>>>>>>>>>>>>>>>", network
-        network.send("path_server.stroke_paths_request", True)
         self.stroke_paths = []
         self.stroke_paths_cursor = 0
         self.paths_to_available_paint = []
@@ -347,6 +345,7 @@ class Path_Server(threading.Thread):
         self.queue.put(msg)
 
     def run(self):
+        network.send("path_server.stroke_paths_request", True)
         while True:
             try:
                 topic, msg = self.queue.get(True)
