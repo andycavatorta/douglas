@@ -639,6 +639,7 @@ class Network(object):
 network = None # placeholder in global scope
 
 def init(hostname):
+    global network
     network = Network(hostname)
     motor_control.start()
     spatial_translation.start()    
