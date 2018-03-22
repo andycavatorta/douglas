@@ -624,7 +624,7 @@ class Network(object):
         topic, msg =  topic_msg # separating just to eval msg.  best to do it early.  it should be done in TB.
         if len(msg) > 0: 
             msg = eval(msg)
-        message_router.add_to_queue(topic, msg)
+        message_router.add_to_queue([topic, msg])
 
     def network_status_handler(self, topic_msg):
         # this method runs in the thread of the caller, not the tread of Main

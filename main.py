@@ -62,6 +62,8 @@ print "online"
 ### LOAD DEVICE-SPECIFIC CODE ###
 #########################
 
+print HOSTNAME, settings.server_names
+
 if HOSTNAME in settings.bot_names:
     role = "bot"
 
