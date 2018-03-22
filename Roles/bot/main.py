@@ -639,7 +639,7 @@ class Network(object):
     def subscribe_to_topic(self, topic): # just for convenience
         self.thirtybirds.subscribe_to_topic(topic)
 
-network = None # placeholder in global scope
+#network = None # placeholder in global scope
 
 def init(hostname):
     global network
