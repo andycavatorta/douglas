@@ -318,7 +318,9 @@ class Path_Server(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.queue = Queue.Queue()
+        print ">>>>>>>>>>>>>>>>>", network
         global network
+        print ">>>>>>>>>>>>>>>>>", network
         network.send("path_server.stroke_paths_request", True)
         self.stroke_paths = []
         self.stroke_paths_cursor = 0
