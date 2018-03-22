@@ -48,7 +48,7 @@ class Motor_Control(threading.Thread):
         settings.motor_control["stepper_motors"]["right_wheel"]["status_callback"] = self.motor_callback
         settings.motor_control["stepper_motors"]["brush_arm"]["status_callback"] = self.motor_callback
         
-        stepper_pulses = stepper_pulses.init(settings.motor_control["stepper_motors"])
+        stepper_pulses.init(settings.motor_control["stepper_motors"])
         self.distance_between_wheels = settings.motor_control["distance_between_wheels"] 
         self.steps_per_rotation = settings.motor_control["steps_per_rotation"] 
         self.circumference_of_rotation = self.distance_between_wheels * math.pi
