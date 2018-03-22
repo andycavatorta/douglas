@@ -48,7 +48,7 @@ class Motor_Control(threading.Thread):
         settings.motor_control["stepper_motors"]["right_wheel"]["status_callback"] = self.motor_callback
         settings.motor_control["stepper_motors"]["brush_arm"]["status_callback"] = self.motor_callback
         
-        self.stepper_pulses = stepper_pulses.init(settings.motor_control["stepper_motors"])
+        stepper_pulses = stepper_pulses.init(settings.motor_control["stepper_motors"])
         self.distance_between_wheels = settings.motor_control["distance_between_wheels"] 
         self.steps_per_rotation = settings.motor_control["steps_per_rotation"] 
         self.circumference_of_rotation = self.distance_between_wheels * math.pi
@@ -64,13 +64,13 @@ class Motor_Control(threading.Thread):
             "brush_arm":0
         }
 
-        self.stepper_pulses.set("left_wheel", "speed", 1.0)
-        self.stepper_pulses.set("right_wheel", "speed", 1.0)
-        self.stepper_pulses.set("brush_arm", "speed", 1.0)
+        stepper_pulses.set("left_wheel", "speed", 1.0)
+        stepper_pulses.set("right_wheel", "speed", 1.0)
+        stepper_pulses.set("brush_arm", "speed", 1.0)
 
-        self.stepper_pulses.set("left_wheel", "enable", True)
-        self.stepper_pulses.set("right_wheel", "enable", True)
-        self.stepper_pulses.set("brush_arm", "enable", True)
+        stepper_pulses.set("left_wheel", "enable", True)
+        stepper_pulses.set("right_wheel", "enable", True)
+        stepper_pulses.set("brush_arm", "enable", True)
 
     def rotate(self, degrees, speed):
         self.speed = float(abs(speed))
@@ -90,13 +90,13 @@ class Motor_Control(threading.Thread):
             "brush_arm":0
         }
 
-        self.stepper_pulses.set("left_wheel", "speed", speed)
-        self.stepper_pulses.set("right_wheel", "speed", speed)
-        self.stepper_pulses.set("brush_arm", "speed", speed)
+        stepper_pulses.set("left_wheel", "speed", speed)
+        stepper_pulses.set("right_wheel", "speed", speed)
+        stepper_pulses.set("brush_arm", "speed", speed)
 
-        self.stepper_pulses.set("left_wheel", "steps", left_steps)
-        self.stepper_pulses.set("right_wheel", "steps", right_steps)
-        self.stepper_pulses.set("brush_arm", "steps", 0)
+        stepper_pulses.set("left_wheel", "steps", left_steps)
+        stepper_pulses.set("right_wheel", "steps", right_steps)
+        stepper_pulses.set("brush_arm", "steps", 0)
 
     def roll(self, distance, speed): # distance units are in mm
         number_of_wheel_rotations = abs(distance) / self.wheel_circumference
@@ -113,13 +113,13 @@ class Motor_Control(threading.Thread):
             "brush_arm":0
         }
 
-        self.stepper_pulses.set("left_wheel", "speed", speed)
-        self.stepper_pulses.set("right_wheel", "speed", speed)
-        self.stepper_pulses.set("brush_arm", "speed", speed)
+        stepper_pulses.set("left_wheel", "speed", speed)
+        stepper_pulses.set("right_wheel", "speed", speed)
+        stepper_pulses.set("brush_arm", "speed", speed)
 
-        self.stepper_pulses.set("left_wheel", "steps", number_of_pulses)
-        self.stepper_pulses.set("right_wheel", "steps", number_of_pulses)
-        self.stepper_pulses.set("brush_arm", "steps", 0)
+        stepper_pulses.set("left_wheel", "steps", number_of_pulses)
+        stepper_pulses.set("right_wheel", "steps", number_of_pulses)
+        stepper_pulses.set("brush_arm", "steps", 0)
 
     def brush_arm(self, distance, speed): # distance units are in mm
         #number_of_wheel_rotations = abs(distance) / self.wheel_circumference
@@ -136,21 +136,21 @@ class Motor_Control(threading.Thread):
             "brush_arm":0
         }
 
-        self.stepper_pulses.set("left_wheel", "speed", speed)
-        self.stepper_pulses.set("right_wheel", "speed", speed)
-        self.stepper_pulses.set("brush_arm", "speed", speed)
+        stepper_pulses.set("left_wheel", "speed", speed)
+        stepper_pulses.set("right_wheel", "speed", speed)
+        stepper_pulses.set("brush_arm", "speed", speed)
 
-        self.stepper_pulses.set("left_wheel", "steps", 0)
-        self.stepper_pulses.set("right_wheel", "steps", 0)
-        self.stepper_pulses.set("brush_arm", "steps", number_of_pulses)
+        stepper_pulses.set("left_wheel", "steps", 0)
+        stepper_pulses.set("right_wheel", "steps", 0)
+        stepper_pulses.set("brush_arm", "steps", number_of_pulses)
 
     def motor_callback(self, motor_name, msg_type, data):
         # print motor_name, msg_type, data
         if msg_type == "steps_cursor":
             if motor_name in ["left_wheel", "right_wheel"]:
                 self.pulse_odometer[motor_name] = data # collect pulse odometer for each motor
-                left_distance  = self.pulse_odometer["left_wheel"]  / self.steps_per_rotation * self.wheel_circumference * ( 1 if self.stepper_pulses.direction else -1)
-                right_distance = self.pulse_odometer["right_wheel"] / self.steps_per_rotation * self.wheel_circumference * ( 1 if self.stepper_pulses.direction else -1)
+                left_distance  = self.pulse_odometer["left_wheel"]  / self.steps_per_rotation * self.wheel_circumference * ( 1 if stepper_pulses.direction else -1)
+                right_distance = self.pulse_odometer["right_wheel"] / self.steps_per_rotation * self.wheel_circumference * ( 1 if stepper_pulses.direction else -1)
                 average_distance = (abs(left_distance) + abs(right_distance)) / 2.0
                 if left_distance < 0 and right_distance > 0: # rotate left
                     proportion_of_circle = average_distance / self.circumference_of_rotation
@@ -186,9 +186,9 @@ class Motor_Control(threading.Thread):
                 if command in ["rotate","roll","brush_arm"]:
                     self.command_queue.put([command, value, speed])
                 if command == "enable":
-                    self.stepper_pulses.set("left_wheel", "enable", value)
-                    self.stepper_pulses.set("right_wheel", "enable", value)
-                    self.stepper_pulses.set("brush_arm", "enable", value)
+                    stepper_pulses.set("left_wheel", "enable", value)
+                    stepper_pulses.set("right_wheel", "enable", value)
+                    stepper_pulses.set("brush_arm", "enable", value)
                 if command == "finished":
                     try:
                         command, value, speed = self.command_queue.get(False)
