@@ -80,7 +80,7 @@ class Thirtybirds_Client_Monitor_Server(threading.Thread):
         previous_hosts = {}
         while True:
             self.empty_host_list()
-            self.network.thirtybirds.send("client_monitor_request", "")
+            self.network.thirtybirds.send("system.client_monitor_request", "")
             time.sleep(self.update_period)
             while not self.queue.empty():
                 [hostname, pickle_version, git_pull_date, temp, cpu, uptime, disk, timestamp] = self.queue.get(True)
@@ -309,7 +309,7 @@ class Main(threading.Thread):
         self.client_monitor_server.daemon = True
         #self.client_monitor_server.start()
         #self.network.thirtybirds.subscribe_to_topic("system")  # subscribe to all system messages
-        self.network.thirtybirds.subscribe_to_topic("client_monitor_response")
+        self.network.thirtybirds.subscribe_to_topic("system.client_monitor_response")
 
         self.network.thirtybirds.subscribe_to_topic("pitch_key_touched")
         self.network.thirtybirds.subscribe_to_topic("transport_position")
@@ -389,7 +389,7 @@ class Main(threading.Thread):
                 topic, msg = self.queue.get(True)
                 #print topic, msg
 
-                if topic == "pitch_key_touched":
+                if topic == "motion.leases.request":
                     self.network.thirtybirds.send("voice_1", self.voices[0].update("pitch_key", msg))
                     self.network.thirtybirds.send("voice_2", self.voices[1].update("pitch_key", msg))
                     self.network.thirtybirds.send("voice_3", self.voices[2].update("pitch_key", msg))
