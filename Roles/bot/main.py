@@ -156,18 +156,18 @@ class Motor_Control(threading.Thread):
                     proportion_of_circle = average_distance / self.circumference_of_rotation
                     degrees = proportion_of_circle * 360.0
                     location_server.add_to_queue("motor_control>location_server.relative_odometry", ["rotate", degrees])
-                    continue
+                    return
                 if left_distance > 0 and right_distance < 0: # rotate right
                     proportion_of_circle = average_distance / self.circumference_of_rotation
                     degrees = proportion_of_circle * 360.0
                     location_server.add_to_queue("motor_control>location_server.relative_odometry", ["rotate", -degrees])
-                    continue
+                    return
                 if left_distance > 0 and right_distance > 0: # roll forward
                     location_server.add_to_queue("motor_control>location_server.relative_odometry", ["roll", average_distance])
-                    continue
+                    return
                 if left_distance < 0 and right_distance < 0: # roll backward
                     location_server.add_to_queue("motor_control>location_server.relative_odometry", ["roll", -average_distance])
-                    continue
+                    return
 
         if msg_type == "finished":
             self.finished[motor_name] = data
@@ -194,13 +194,13 @@ class Motor_Control(threading.Thread):
                         command, value, speed = self.command_queue.get(False)
                         if command  == "rotate":
                             self.rotate(value, speed)
-                            continue
+                            return
                         if command  == "roll":
                             self.roll(value, speed)
-                            continue
+                            return
                         if command  == "brush_arm":
                             self.brush_arm(value, speed)
-                            continue
+                            return
                     except Queue.Empty:
                         pass
 
