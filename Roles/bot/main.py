@@ -416,7 +416,7 @@ class Location_Server(threading.Thread):
         self.outstanding_location_request = False
 
     def detect_location_disparity(self):
-        for key in ["x","y","orientation","timestamp"]
+        for key in ["x","y","orientation","timestamp"]:
             if abs(self.location_from_odometry[key] - self.location_from_lps[key]) > self.location_disparity_threshold[key]:
                 return True
         return False
