@@ -150,8 +150,8 @@ class Motor_Control(threading.Thread):
         if msg_type == "steps_cursor":
             if motor_name in ["left_wheel", "right_wheel"]:
                 self.pulse_odometer[motor_name] = data # collect pulse odometer for each motor
-                left_distance  = self.pulse_odometer["left_wheel"]  / self.steps_per_rotation * self.wheel_circumference * ( 1 if settings.motor_control["stepper_motors"]["left_wheel"]["direction"] else -1)
-                right_distance = self.pulse_odometer["right_wheel"] / self.steps_per_rotation * self.wheel_circumference * ( 1 if settings.motor_control["stepper_motors"]["right_wheel"]["direction"] else -1)
+                left_distance  = self.pulse_odometer["left_wheel"]  / self.steps_per_rotation * self.wheel_circumference * ( 1 if settings.motor_control["stepper_motors"]["left_wheel"]["backwards_orientation"] else -1)
+                right_distance = self.pulse_odometer["right_wheel"] / self.steps_per_rotation * self.wheel_circumference * ( 1 if settings.motor_control["stepper_motors"]["right_wheel"]["backwards_orientation"] else -1)
                 average_distance = (abs(left_distance) + abs(right_distance)) / 2.0
                 if left_distance < 0 and right_distance > 0: # rotate left
                     proportion_of_circle = average_distance / self.circumference_of_rotation
