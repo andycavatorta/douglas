@@ -6,6 +6,7 @@ import settings
 import time
 import threading
 import traceback
+import socket
 import sys
 
 
@@ -13,10 +14,103 @@ BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 UPPER_PATH = os.path.split(os.path.dirname(os.path.realpath(__file__)))[0]
 THIRTYBIRDS_PATH = "%s/thirtybirds_2_0" % (UPPER_PATH )
 
-#sys.path.append(BASE_PATH)
-#sys.path.append(UPPER_PATH)
-
 from thirtybirds_2_0.Network.manager import init as network_init
+
+class Location(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.queue = Queue.Queue()
+
+    def add_to_queue(self, msg):
+        self.queue.put(msg)
+
+    def run(self):
+        while True:
+            try:
+                topic, msg = self.queue.get(True)
+                print topic, msg
+
+            except Exception as e:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
+
+location = Location()
+location.daemon = True
+
+
+class Leases(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.queue = Queue.Queue()
+
+    def add_to_queue(self, msg):
+        self.queue.put(msg)
+
+    def run(self):
+        while True:
+            try:
+                topic, msg = self.queue.get(True)
+                print topic, msg
+
+            except Exception as e:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
+
+leases = Leases()
+leases.daemon = True
+
+
+class Paths(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.queue = Queue.Queue()
+
+    def add_to_queue(self, msg):
+        self.queue.put(msg)
+
+    def run(self):
+        while True:
+            try:
+                topic, msg = self.queue.get(True)
+                print topic, msg
+
+            except Exception as e:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
+
+paths = Paths()
+paths.daemon = True
+
+
+
+
+
+class Bots(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.queue = Queue.Queue()
+        #for 
+
+
+
+    def add_to_queue(self, msg):
+        self.queue.put(msg)
+
+    def run(self):
+        while True:
+            try:
+                topic, msg = self.queue.get(True)
+                print topic, msg
+
+            except Exception as e:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
+
+bots = Bots()
+bots.daemon = True
+
+
+
 
 class Network(object):
     def __init__(self, hostname, network_message_handler, network_status_handler):
@@ -43,8 +137,12 @@ class Main(threading.Thread):
         #self.pedals.daemon = True
         #self.pedals.start()
         #self.network.thirtybirds.subscribe_to_topic("system")  # subscribe to all system messages
-        self.network.thirtybirds.subscribe_to_topic("path_server.stroke_paths_request")
+        self.network.thirtybirds.subscribe_to_topic("location_server.location_from_lps_response")
         self.network.thirtybirds.subscribe_to_topic("mobility_loop.lease_request")
+        self.network.thirtybirds.subscribe_to_topic("mobility_loop.enable_request")
+        self.network.thirtybirds.subscribe_to_topic("path_server.stroke_paths_request")
+        self.network.thirtybirds.subscribe_to_topic("path_server.paths_response")
+        self.network.thirtybirds.subscribe_to_topic("path_server.path_to_available_paint_response")
         self.network.thirtybirds.subscribe_to_topic("management.system_status_response")
         self.network.thirtybirds.subscribe_to_topic("management.system_reboot_response")
         self.network.thirtybirds.subscribe_to_topic("management.system_shutdown_response")
@@ -55,6 +153,7 @@ class Main(threading.Thread):
     def network_message_handler(self, topic_msg):
         # this method runs in the thread of the caller, not the tread of Main
         topic, msg =  topic_msg # separating just to eval msg.  best to do it early.  it should be done in TB.
+        print topic, msg
         if len(msg) > 0:
             try:
                 msg = eval(msg)
@@ -74,7 +173,30 @@ class Main(threading.Thread):
             try:
                 topic, msg = self.queue.get(True)
                 print topic, msg
-
+                if topic == "location_server.location_from_lps_response":
+                    pass
+                if topic == "mobility_loop.lease_request":
+                    pass
+                if topic == "mobility_loop.enable_request":
+                    pass
+                if topic == "path_server.stroke_paths_request":
+                    pass
+                if topic == "path_server.paths_response":
+                    pass
+                if topic == "path_server.path_to_available_paint_response":
+                    pass
+                if topic == "management.system_status_response":
+                    pass
+                if topic == "management.system_reboot_response":
+                    pass
+                if topic == "management.system_shutdown_response":
+                    pass
+                if topic == "management.git_pull_response":
+                    pass
+                if topic == "management.scripts_update_response":
+                    pass
+                if topic == "present":
+                    pass
                 #if topic == "motion.leases.request":
                 #    self.network.thirtybirds.send("voice_1", self.voices[0].update("pitch_key", msg))
 

@@ -71,8 +71,8 @@ motor_control = {
             "backwards_orientation":True,
         },
         "brush_arm":{
-            "pulse_pin":19,
-            "dir_pin":16,
+            "pulse_pin":6,
+            "dir_pin":12,
             "base_pulse_period":0.0005,
             "status_callback":None,
             "backwards_orientation":False,
@@ -87,10 +87,7 @@ motor_control = {
 
 paint_odometer_max_value =2.0, # meters
 
-
-
-
-    
-
-
-#50683
+lps = {
+    "host":"douglas-lps.local",
+    "port":50683
+}

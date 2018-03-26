@@ -51,6 +51,7 @@ class Motor_Control(threading.Thread):
         stepper_pulses.init(settings.motor_control["stepper_motors"])
         self.distance_between_wheels = settings.motor_control["distance_between_wheels"] 
         self.steps_per_rotation = settings.motor_control["steps_per_rotation"] 
+        self.wheel_circumference = settings.motor_control["wheel_circumference"] 
         self.circumference_of_rotation = self.distance_between_wheels * math.pi
 
         self.finished = {
