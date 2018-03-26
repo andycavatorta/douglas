@@ -177,6 +177,7 @@ class Motor_Control(threading.Thread):
                 
 
     def add_to_queue(self, msg):
+        print "Motor_Control.add_to_queue", msg
         self.message_queue.put(msg)
 
     def run(self):
@@ -184,6 +185,7 @@ class Motor_Control(threading.Thread):
             try:
                 # block on waiting for all motors to acknowledge completion or disable
                 command, value, speed = self.message_queue.get(True)
+                print "Motor_Control.run", command, value, speed
                 if command in ["rotate","roll","brush_arm"]:
                     self.command_queue.put([command, value, speed])
                 if command == "enable":
