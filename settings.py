@@ -71,8 +71,8 @@ motor_control = {
             "backwards_orientation":True,
         },
         "brush_arm":{
-            "pulse_pin":6,
-            "dir_pin":12,
+            "pulse_pin":12,
+            "dir_pin":6,
             "base_pulse_period":0.0005,
             "status_callback":None,
             "backwards_orientation":False,
