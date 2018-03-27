@@ -79,7 +79,7 @@ motor_control = {
         }
     },
     "wheel_circumference":0.76 * math.pi,
-    "distance_between_wheels":195.0,
+    "distance_between_wheels":0.195,
     "steps_per_rotation":1600,
     "brush_arm_distance":200,
 }   

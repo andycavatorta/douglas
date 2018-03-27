@@ -78,8 +78,10 @@ class Motor_Control(threading.Thread):
         print "float(abs(degrees))", float(abs(degrees))
         proportion_of_circle = float(abs(degrees)) / 360.0
         print "proportion_of_circle", proportion_of_circle
+
         length_of_arc = proportion_of_circle * self.circumference_of_rotation
         print "length_of_arc", length_of_arc
+        
         pulses_of_arc = length_of_arc * self.steps_per_rotation
         print "pulses_of_arc", pulses_of_arc
         left_steps, right_steps = (pulses_of_arc, -pulses_of_arc) if degrees > 0 else (-pulses_of_arc, pulses_of_arc)
