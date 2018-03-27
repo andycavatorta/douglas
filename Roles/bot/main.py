@@ -361,7 +361,7 @@ class Path_Server(threading.Thread):
         while True:
             try:
                 topic, msg = self.queue.get(True)
-                print topic, msg
+                #print topic, msg
                 if topic == "path_server.stroke_paths_response":
                     self.stroke_paths = msg
                     self.stroke_paths_cursor = 0
@@ -440,7 +440,7 @@ class Location_Server(threading.Thread):
         while True:
             try:
                 topic, msg = self.queue.get(True)
-                print topic, msg
+                #print topic, msg
                 if topic == "location_server.location_from_lps_response":
                     self.location_from_lps["x"] = float(msg["x"])
                     self.location_from_lps["y"] = float(msg["y"])
@@ -518,7 +518,7 @@ class Mobility_Loop(threading.Thread):
         while True:
             try:
                 topic, msg = self.queue.get(True)
-                print topic, msg
+                #print topic, msg
 
                 if topic == "location_server>mobility_loop.location_response":
                     self.location = msg
@@ -577,7 +577,7 @@ class Message_Router(threading.Thread):
         while True:
             try:
                 topic, msg = self.queue.get(True)
-                print topic, msg
+                #print topic, msg
                 if topic == "management.system_status_request":
                     network.send("management.system_status_response", self.management.get_system_status(msg))
                     continue
