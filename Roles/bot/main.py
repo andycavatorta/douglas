@@ -592,7 +592,7 @@ class Message_Router(threading.Thread):
 
     def run(self):
 
-        mobility_loop.add_to_queue("location_server>mobility_loop.location_response", [0.0,0.0,0.0]) # just to get it started?
+        mobility_loop.add_to_queue(["location_server>mobility_loop.location_response", [0.0,0.0,0.0]]) # just to get it started?
 
         while True:
             try:
