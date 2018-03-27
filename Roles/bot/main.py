@@ -146,7 +146,7 @@ class Motor_Control(threading.Thread):
         stepper_pulses.set("brush_arm", "steps", number_of_pulses)
 
     def motor_callback(self, motor_name, msg_type, data):
-        # print motor_name, msg_type, data
+        print "motor_callback", motor_name, msg_type, data
         if msg_type == "steps_cursor":
             if motor_name in ["left_wheel", "right_wheel"]:
                 self.pulse_odometer[motor_name] = data # collect pulse odometer for each motor
