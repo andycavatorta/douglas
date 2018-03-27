@@ -78,7 +78,7 @@ motor_control = {
             "backwards_orientation":True,
         }
     },
-    "wheel_circumference":76.0 * math.pi,
+    "wheel_circumference":0.76 * math.pi,
     "distance_between_wheels":195.0,
     "steps_per_rotation":1600,
     "brush_arm_distance":200,
