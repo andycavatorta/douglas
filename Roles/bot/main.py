@@ -537,7 +537,7 @@ class Mobility_Loop(threading.Thread):
 
                 if topic == "location_server>mobility_loop.location_response":
                     self.location = msg
-                    path_server.add_to_queue("mobility_loop>path_server.destination_request", True)
+                    path_server.add_to_queue(["mobility_loop>path_server.destination_request", self.location])
 
                 if topic == "path_server>mobility_loop.destination_response":
                     self.destination = msg
