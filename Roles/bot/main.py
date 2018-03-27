@@ -54,6 +54,8 @@ class Motor_Control(threading.Thread):
         self.wheel_circumference = settings.motor_control["wheel_circumference"] 
         self.circumference_of_rotation = self.distance_between_wheels * math.pi
 
+        self.brush_position_up = False
+
         self.finished = {
             "left_wheel":True,
             "right_wheel":True,
@@ -130,9 +132,20 @@ class Motor_Control(threading.Thread):
         stepper_pulses.set("right_wheel", "steps", right_steps)
         stepper_pulses.set("brush_arm", "steps", 0)
 
-    def brush_arm(self, distance, speed): # distance units are in mm
+    def brush_arm(self, brush_position_up, speed): # distance units are in mm
         #number_of_wheel_rotations = abs(distance) / self.wheel_circumference
-        number_of_pulses = settings.motor_control["stepper_motors"] if distance else -settings.motor_control["stepper_motors"]
+
+        if brush_position_up == self.brush_position_up: # if we're already in the right position
+            return 
+
+        self.brush_position_up = brush_position_up
+        if self.brush_position_up:
+            number_of_pulses = 300
+        else: 
+            number_of_pulses = -300
+
+        #number_of_pulses = brush_position_up
+        #number_of_pulses = settings.motor_control["stepper_motors"] if distance else -settings.motor_control["stepper_motors"]
 
         self.finished = {
             "left_wheel":False,
