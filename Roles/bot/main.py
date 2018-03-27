@@ -560,6 +560,8 @@ mobility_loop.daemon = True
 
 
 
+
+
 class Message_Router(threading.Thread):
     """
         This class 
@@ -589,6 +591,9 @@ class Message_Router(threading.Thread):
         self.queue.put(msg)
 
     def run(self):
+
+        mobility_loop.add_to_queue("location_server>mobility_loop.location_response", [0.0,0.0,0.0]) # just to get it started?
+
         while True:
             try:
                 topic, msg = self.queue.get(True)
