@@ -392,6 +392,7 @@ class Path_Server(threading.Thread):
                     self.paths_to_available_paint_cursor = 0
 
                 if topic == "mobility_loop>path_server.destination_request":
+                    print "++++++++++++++++++++++++++++++++++++"
                     if self.stroke_paths == []: # if stroke_paths have not been received
                         self.outstanding_destination_request == True
                         network.send("path_server.stroke_paths_request", True)
