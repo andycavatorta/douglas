@@ -120,6 +120,8 @@ class Motor_Control(threading.Thread):
             "brush_arm":0
         }
 
+        left_steps, right_steps = (number_of_pulses, number_of_pulses) if distance > 0 else (-number_of_pulses, -number_of_pulses)
+
         stepper_pulses.set("left_wheel", "speed", speed)
         stepper_pulses.set("right_wheel", "speed", speed)
         stepper_pulses.set("brush_arm", "speed", speed)
