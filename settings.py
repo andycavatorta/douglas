@@ -61,7 +61,7 @@ motor_control = {
             "dir_pin":20,
             "base_pulse_period":0.0005,
             "status_callback":None,
-            "backwards_orientation":True,
+            "backwards_orientation":False,
         },
         "right_wheel":{
             "pulse_pin":19,
@@ -78,8 +78,8 @@ motor_control = {
             "backwards_orientation":True,
         }
     },
-    "wheel_circumference":25.4 * math.pi,
-    "distance_between_wheels":215.0,
+    "wheel_circumference":76.0 * math.pi,
+    "distance_between_wheels":195.0,
     "steps_per_rotation":1600,
     "brush_arm_distance":200,
 }   
