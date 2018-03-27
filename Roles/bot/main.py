@@ -156,18 +156,18 @@ class Motor_Control(threading.Thread):
                 if left_distance < 0 and right_distance > 0: # rotate left
                     proportion_of_circle = average_distance / self.circumference_of_rotation
                     degrees = proportion_of_circle * 360.0
-                    location_server.add_to_queue("motor_control>location_server.relative_odometry", ["rotate", degrees])
+                    location_server.add_to_queue(["motor_control>location_server.relative_odometry", ["rotate", degrees]])
                     return
                 if left_distance > 0 and right_distance < 0: # rotate right
                     proportion_of_circle = average_distance / self.circumference_of_rotation
                     degrees = proportion_of_circle * 360.0
-                    location_server.add_to_queue("motor_control>location_server.relative_odometry", ["rotate", -degrees])
+                    location_server.add_to_queue(["motor_control>location_server.relative_odometry", ["rotate", -degrees]])
                     return
                 if left_distance > 0 and right_distance > 0: # roll forward
-                    location_server.add_to_queue("motor_control>location_server.relative_odometry", ["roll", average_distance])
+                    location_server.add_to_queue(["motor_control>location_server.relative_odometry", ["roll", average_distance]])
                     return
                 if left_distance < 0 and right_distance < 0: # roll backward
-                    location_server.add_to_queue("motor_control>location_server.relative_odometry", ["roll", -average_distance])
+                    location_server.add_to_queue(["motor_control>location_server.relative_odometry", ["roll", -average_distance]])
                     return
 
         if msg_type == "finished":
