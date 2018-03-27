@@ -81,7 +81,7 @@ class Motor_Control(threading.Thread):
 
         length_of_arc = proportion_of_circle * self.circumference_of_rotation
         print "length_of_arc", length_of_arc
-        
+
         pulses_of_arc = length_of_arc * self.steps_per_rotation
         print "pulses_of_arc", pulses_of_arc
         left_steps, right_steps = (pulses_of_arc, -pulses_of_arc) if degrees > 0 else (-pulses_of_arc, pulses_of_arc)
@@ -194,7 +194,7 @@ class Motor_Control(threading.Thread):
             try:
                 # block on waiting for all motors to acknowledge completion or disable
                 command, value, speed = self.message_queue.get(True)
-                print "Motor_Control.run", command, value, speed
+                #print "Motor_Control.run", command, value, speed
                 if command in ["rotate","roll","brush_arm"]:
                     self.command_queue.put([command, value, speed])
                 if command == "enable":
