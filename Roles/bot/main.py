@@ -126,8 +126,8 @@ class Motor_Control(threading.Thread):
         stepper_pulses.set("right_wheel", "speed", speed)
         stepper_pulses.set("brush_arm", "speed", speed)
 
-        stepper_pulses.set("left_wheel", "steps", number_of_pulses)
-        stepper_pulses.set("right_wheel", "steps", number_of_pulses)
+        stepper_pulses.set("left_wheel", "steps", left_steps)
+        stepper_pulses.set("right_wheel", "steps", right_steps)
         stepper_pulses.set("brush_arm", "steps", 0)
 
     def brush_arm(self, distance, speed): # distance units are in mm
