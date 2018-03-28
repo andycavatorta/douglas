@@ -92,7 +92,7 @@ class Motor_Control(threading.Thread):
         self.finished = {
             "left_wheel":False,
             "right_wheel":False,
-            "brush_arm":False
+            "brush_arm":True
         }
         self.pulse_odometer = {
             "left_wheel":0,
@@ -116,7 +116,7 @@ class Motor_Control(threading.Thread):
         self.finished = {
             "left_wheel":False,
             "right_wheel":False,
-            "brush_arm":False
+            "brush_arm":True
         }
         self.pulse_odometer = {
             "left_wheel":0,
@@ -153,7 +153,7 @@ class Motor_Control(threading.Thread):
         self.finished = {
             "left_wheel":True,
             "right_wheel":True,
-            "brush_arm":True
+            "brush_arm":False
         }
         self.pulse_odometer = {
             "left_wheel":0,
@@ -220,9 +220,9 @@ class Motor_Control(threading.Thread):
                     stepper_pulses.set("brush_arm", "enable", value)
                 if command == "finished":
                     self.finished = {
-                        "left_wheel":False,
-                        "right_wheel":False,
-                        "brush_arm":False
+                        "left_wheel":True,
+                        "right_wheel":True,
+                        "brush_arm":True
                     }
                 if self.finished["left_wheel"] and self.finished["right_wheel"] and self.finished["brush_arm"]:
                     try:
