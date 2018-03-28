@@ -389,7 +389,7 @@ class Path_Server(threading.Thread):
                     self.stroke_paths = msg
                     self.stroke_paths_cursor = 0
                     #if self.outstanding_destination_request:
-                    mobility_loop.add_to_queue("path_server>mobility_loop.destination_response", self.generate_destination())
+                    mobility_loop.add_to_queue(["path_server>mobility_loop.destination_response", self.generate_destination()])
 
                 if topic == "location_server>path_server.location_correction_paths":
                     self.location_correction_paths = msg
