@@ -330,9 +330,9 @@ class Spatial_Translation(threading.Thread):
                 if topic == "mobility_loop>spatial_translation.set_destination":
                     origin, destination = msg
                     distance, target_angle_relative_to_bot = self.translate_cartesian_to_vectors(origin, destination)
-                    brush = destination[2]
+                    
                     print "distance, target_angle_relative_to_bot", distance, target_angle_relative_to_bot
-                    self.translate_vectors_to_motor_commands(brush, distance, target_angle_relative_to_bot)
+                    self.translate_vectors_to_motor_commands(destination["brush"], distance, target_angle_relative_to_bot)
                     continue
 
             except Exception as e:
