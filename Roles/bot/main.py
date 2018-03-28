@@ -225,7 +225,7 @@ class Motor_Control(threading.Thread):
                         if command  == "roll":
                             self.roll(value, speed)
                             return
-                        if command  == "brush_arm":
+                        if command  == "brush":
                             self.brush_arm(value, speed)
                             return
                     except Queue.Empty:
