@@ -260,7 +260,7 @@ class Spatial_Translation(threading.Thread):
     It also generates high-level commands for the motor controller [ roll(meters), rotate(degrees), brush(["up"|"down"]) ]
 
     incoming message topics:
-        destination ( location["x"], location["y"], location["orientation"], destination_x, destination_y )
+        destination ( location["x"], location["y"], location["orientation"], destination["x"], destination["y"] )
         enable ([True|False])
 
     outgoing message topics:
@@ -281,40 +281,36 @@ class Spatial_Translation(threading.Thread):
 
     def translate_cartesian_to_vectors(self, origin, destination):
         # calculate distance
-        origin_x, origin_y, origin_orientation = origin # for simplicity
-        destination_x, destination_y, brush = destination # for simplicity
-
-
-        distance = math.sqrt(((origin_x - destination_x)**2) + ((origin_y - destination_y)**2))
+        distance = math.sqrt(((origin['x'] - destination["x"])**2) + ((origin['y'] - destination["y"])**2))
         # calculate absolute heading relative to Cartesian space, not relative to bot
-        if origin_x == destination_x and origin_y == destination_y: # no movement
+        if origin['x'] == destination["x"] and origin['y'] == destination["y"]: # no movement
             return (0.0, 0.0)
-        elif origin_x < destination_x and origin_y == destination_y: # x-axis positive
+        elif origin['x'] < destination["x"] and origin['y'] == destination["y"]: # x-axis positive
             return (distance, 0.0)
-        elif origin_x > destination_x and origin_y == destination_y: # x-axis negative
+        elif origin['x'] > destination["x"] and origin['y'] == destination["y"]: # x-axis negative
             return (distance, 180.0)
-        elif origin_x == destination_x and origin_y < destination_y: # y-axis positive
+        elif origin['x'] == destination["x"] and origin['y'] < destination["y"]: # y-axis positive
             return (distance, 90.0)
-        elif origin_x == destination_x and origin_y > destination_y: # y-axis negative
+        elif origin['x'] == destination["x"] and origin['y'] > destination["y"]: # y-axis negative
             return (distance, -90.0)
-        elif origin_x < destination_x and origin_y < destination_y: # somewhere in quadrant 1
-            target_angle_relative_to_Cartesian_space =  math.degrees(math.acos( abs(destination_x-origin_x) / distance) )
-            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin_orientation
+        elif origin['x'] < destination["x"] and origin['y'] < destination["y"]: # somewhere in quadrant 1
+            target_angle_relative_to_Cartesian_space =  math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
+            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin['orientation']
             return (distance, target_angle_relative_to_bot)
-        elif origin_x > destination_x and origin_y < destination_y: # somewhere in quadrant 2
-            target_angle_relative_to_Cartesian_space =  90 + math.degrees(math.acos( abs(destination_x-origin_x) / distance) )
-            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin_orientation
+        elif origin['x'] > destination["x"] and origin['y'] < destination["y"]: # somewhere in quadrant 2
+            target_angle_relative_to_Cartesian_space =  90 + math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
+            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin['orientation']
             return (distance, target_angle_relative_to_bot)
-        elif origin_x > destination_x and origin_y > destination_y: # somewhere in quadrant 3
-            target_angle_relative_to_Cartesian_space =  180 + math.degrees(math.acos( abs(destination_x-origin_x) / distance) )
-            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin_orientation
+        elif origin['x'] > destination["x"] and origin['y'] > destination["y"]: # somewhere in quadrant 3
+            target_angle_relative_to_Cartesian_space =  180 + math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
+            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin['orientation']
             return (distance, target_angle_relative_to_bot)
-        elif origin_x < destination_x and origin_y > destination_y: # somewhere in quadrant 4
-            target_angle_relative_to_Cartesian_space =  270 + math.degrees(math.acos( abs(destination_x-origin_x) / distance) )
-            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin_orientation
+        elif origin['x'] < destination["x"] and origin['y'] > destination["y"]: # somewhere in quadrant 4
+            target_angle_relative_to_Cartesian_space =  270 + math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
+            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin['orientation']
             return (distance, target_angle_relative_to_bot)
         else :
-            print "Coordinates_To_Vectors.calculate_vectors_from_target_coordinates cannot assign quadrant", origin_x, destination_x, origin_y, destination_y
+            print "Coordinates_To_Vectors.calculate_vectors_from_target_coordinates cannot assign quadrant", origin['x'], destination["x"], origin['y'], destination["y"]
 
 
     def translate_vectors_to_cartesian(self):
@@ -546,7 +542,13 @@ class Mobility_Loop(threading.Thread):
         threading.Thread.__init__(self)
         self.queue = Queue.Queue()
         #self.current_task = ["wait_for_location," "wait_for_destination","wait_for_lease","wait_for_motion"][0] # < options listed for you, dear programmer
-        self.location = [0,0,0.0]
+        self.location = {
+            "x":0.0,
+            "y":0.0,
+            "orientation":0.0,
+            "timestamp":None
+        }
+        
         self.destination =  None
         self.lease = None
         self.motion_complete = False

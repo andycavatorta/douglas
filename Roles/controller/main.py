@@ -65,11 +65,11 @@ class Paths(threading.Thread):
         self.network = network
         self.queue = Queue.Queue()
         self.stroke_paths = [
-            [0.25, 0.25, True],
-            [0.25, 0.0, False],
-            [0.25, 0.25, True],
-            [0.0, 0.25, False],
-            [0.0, 0.0, True],
+            {"x":0.25, "y":0.25, "brush":True  },
+            {"x":0.25, "y":0.0,  "brush":False },
+            {"x":0.25, "y":0.25, "brush":True  },
+            {"x":0.0,  "y":0.0,  "brush":False },
+            {"x":0.0,  "y":0.25, "brush":False }
         ]
 
     def add_to_queue(self, msg):
