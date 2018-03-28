@@ -281,6 +281,7 @@ class Spatial_Translation(threading.Thread):
 
     def translate_cartesian_to_vectors(self, origin, destination):
         # calculate distance
+        print "spatial_translation.translate_cartesian_to_vectors", origin, destination
         distance = math.sqrt(((origin['x'] - destination["x"])**2) + ((origin['y'] - destination["y"])**2))
         # calculate absolute heading relative to Cartesian space, not relative to bot
         if origin['x'] == destination["x"] and origin['y'] == destination["y"]: # no movement
