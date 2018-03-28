@@ -151,9 +151,9 @@ class Motor_Control(threading.Thread):
         #number_of_pulses = settings.motor_control["stepper_motors"] if distance else -settings.motor_control["stepper_motors"]
 
         self.finished = {
-            "left_wheel":False,
-            "right_wheel":False,
-            "brush_arm":False
+            "left_wheel":True,
+            "right_wheel":True,
+            "brush_arm":True
         }
         self.pulse_odometer = {
             "left_wheel":0,
@@ -201,7 +201,6 @@ class Motor_Control(threading.Thread):
             self.finished[motor_name] = data
             if self.finished["left_wheel"] and self.finished["right_wheel"] and self.finished["brush_arm"]:
                 self.add_to_queue(["finished", None, None])
-                
 
     def add_to_queue(self, msg):
         print "Motor_Control.add_to_queue", msg
@@ -220,6 +219,12 @@ class Motor_Control(threading.Thread):
                     stepper_pulses.set("right_wheel", "enable", value)
                     stepper_pulses.set("brush_arm", "enable", value)
                 if command == "finished":
+                    self.finished = {
+                        "left_wheel":False,
+                        "right_wheel":False,
+                        "brush_arm":False
+                    }
+                if self.finished["left_wheel"] and self.finished["right_wheel"] and self.finished["brush_arm"]:
                     try:
                         command, value, speed = self.command_queue.get(False)
                         if command  == "rotate":
