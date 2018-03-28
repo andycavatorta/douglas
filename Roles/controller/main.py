@@ -2,6 +2,7 @@
 import os
 import Queue
 #import RPi.GPIO as GPIO
+import random
 import settings
 import time
 import threading
@@ -34,13 +35,12 @@ class Location(threading.Thread):
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
 
-location = Location()
-location.daemon = True
 
 
 class Leases(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
+    def __init__(self, network):
+        threading.Thread.__init__(self, network)
+        self.network = network
         self.queue = Queue.Queue()
 
     def add_to_queue(self, msg):
@@ -51,14 +51,13 @@ class Leases(threading.Thread):
             try:
                 topic, msg = self.queue.get(True)
                 print topic, msg
+                if topic ==  "mobility_loop.lease_request":
+                    time.sleep(((random.random()+1)**3)-1) # to simulate waiting for lease
+                    self.network.thirtybirds.send("mobility_loop.lease_response",True)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
-
-leases = Leases()
-leases.daemon = True
-
 
 class Paths(threading.Thread):
     def __init__(self, network):
@@ -147,9 +146,17 @@ class Main(threading.Thread):
         self.paths.daemon = True
         self.paths.start()
 
+        self.leases = Leases()
+        self.leases.daemon = True
+        self.leases.start()
+
+        #self.location = Location()
+        #self.location.daemon = True
+        #self.location.start()
+
         self.network.thirtybirds.subscribe_to_topic("location_server.location_from_lps_response")
         self.network.thirtybirds.subscribe_to_topic("mobility_loop.lease_request")
-        self.network.thirtybirds.subscribe_to_topic("mobility_loop.enable_request")
+        self.network.thirtybirds.subscribe_to_topic("mobility_loop.enable_request"), network
         self.network.thirtybirds.subscribe_to_topic("path_server.stroke_paths_request")
         self.network.thirtybirds.subscribe_to_topic("path_server.paths_response")
         self.network.thirtybirds.subscribe_to_topic("path_server.path_to_available_paint_response")
@@ -187,6 +194,7 @@ class Main(threading.Thread):
                 if topic == "location_server.location_from_lps_response":
                     pass
                 if topic == "mobility_loop.lease_request":
+                    self.leases.add_to_queue("mobility_loop.lease_request", msg)
                     pass
                 if topic == "mobility_loop.enable_request":
                     pass
