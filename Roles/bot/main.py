@@ -527,6 +527,7 @@ class Mobility_Loop(threading.Thread):
         self.motion_complete = False
 
     def add_to_queue(self, msg):
+        print "mobility_loop.add_to_queue", msg
         self.queue.put(msg)
 
     def run(self):
@@ -560,8 +561,6 @@ mobility_loop.daemon = True
 
 
 
-
-
 class Message_Router(threading.Thread):
     """
         This class 
@@ -580,10 +579,7 @@ class Message_Router(threading.Thread):
         outgoing message topics:
     
         synchronous functions:
-            
-
-
-
+         
     """
     def __init__(self):
         threading.Thread.__init__(self)
