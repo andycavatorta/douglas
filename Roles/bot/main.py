@@ -76,6 +76,7 @@ class Motor_Control(threading.Thread):
         stepper_pulses.set("brush_arm", "enable", True)
 
     def rotate(self, degrees, speed):
+        print "Motor_Control.rotate", degrees, speed
         self.speed = float(abs(speed))
         print "float(abs(degrees))", float(abs(degrees))
         proportion_of_circle = float(abs(degrees)) / 360.0
@@ -108,6 +109,7 @@ class Motor_Control(threading.Thread):
         stepper_pulses.set("brush_arm", "steps", 0)
 
     def roll(self, distance, speed): # distance units are in mm
+        print "Motor_Control.roll", distance, speed
         number_of_wheel_rotations = abs(distance) / self.wheel_circumference
         number_of_pulses = number_of_wheel_rotations * self.steps_per_rotation
 
@@ -133,6 +135,7 @@ class Motor_Control(threading.Thread):
         stepper_pulses.set("brush_arm", "steps", 0)
 
     def brush_arm(self, brush_position_up, speed): # distance units are in mm
+        print "Motor_Control.brush_arm", brush_position_up, speed
         #number_of_wheel_rotations = abs(distance) / self.wheel_circumference
 
         if brush_position_up == self.brush_position_up: # if we're already in the right position
