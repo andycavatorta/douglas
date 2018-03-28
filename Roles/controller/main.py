@@ -84,7 +84,7 @@ class Paths(threading.Thread):
                 print "Paths.run", topic, msg
                 if topic == "path_server.stroke_paths_request":
                     print "+++++++++++++++++++"
-                    self.network.thirtybirds.send(["path_server.stroke_paths_response",self.stroke_paths])
+                    self.network.thirtybirds.send("path_server.stroke_paths_response",self.stroke_paths)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -146,6 +146,7 @@ class Main(threading.Thread):
 
         self.paths = Paths(self.network)
         self.paths.daemon = True
+        self.paths.start()
 
         self.network.thirtybirds.subscribe_to_topic("location_server.location_from_lps_response")
         self.network.thirtybirds.subscribe_to_topic("mobility_loop.lease_request")

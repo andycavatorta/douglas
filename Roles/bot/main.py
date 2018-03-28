@@ -619,7 +619,7 @@ class Message_Router(threading.Thread):
                     mobility_loop.add_to_queue(topic, msg)
                     continue
                 if topic == "path_server.stroke_paths_response":
-                    path_server.add_to_queue(topic, msg)
+                    path_server.add_to_queue([topic, msg])
                     continue
                 if topic == "path_server.path_to_available_paint_response":
                     path_server.add_to_queue(topic, msg)
