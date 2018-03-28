@@ -280,7 +280,7 @@ class Spatial_Translation(threading.Thread):
 
     def translate_cartesian_to_vectors(self, origin, destination):
         # calculate distance
-        origin_x, origin_y = origin # for simplicity
+        origin_x, origin_y, origin_orientation = origin # for simplicity
         destination_x, destination_y, brush = destination # for simplicity
 
 
@@ -298,19 +298,19 @@ class Spatial_Translation(threading.Thread):
             return (distance, -90.0)
         elif origin_x < destination_x and origin_y < destination_y: # somewhere in quadrant 1
             target_angle_relative_to_Cartesian_space =  math.degrees(math.acos( abs(destination_x-origin_x) / distance) )
-            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin["orientation"]
+            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin_orientation
             return (distance, target_angle_relative_to_bot)
         elif origin_x > destination_x and origin_y < destination_y: # somewhere in quadrant 2
             target_angle_relative_to_Cartesian_space =  90 + math.degrees(math.acos( abs(destination_x-origin_x) / distance) )
-            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin["orientation"]
+            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin_orientation
             return (distance, target_angle_relative_to_bot)
         elif origin_x > destination_x and origin_y > destination_y: # somewhere in quadrant 3
             target_angle_relative_to_Cartesian_space =  180 + math.degrees(math.acos( abs(destination_x-origin_x) / distance) )
-            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin["orientation"]
+            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin_orientation
             return (distance, target_angle_relative_to_bot)
         elif origin_x < destination_x and origin_y > destination_y: # somewhere in quadrant 4
             target_angle_relative_to_Cartesian_space =  270 + math.degrees(math.acos( abs(destination_x-origin_x) / distance) )
-            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin["orientation"]
+            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin_orientation
             return (distance, target_angle_relative_to_bot)
         else :
             print "Coordinates_To_Vectors.calculate_vectors_from_target_coordinates cannot assign quadrant", origin_x, destination_x, origin_y, destination_y
