@@ -81,8 +81,9 @@ class Paths(threading.Thread):
         while True:
             try:
                 topic, msg = self.queue.get(True)
-                print topic, msg
+                print "Paths.run", topic, msg
                 if topic == "path_server.stroke_paths_request":
+                    print "+++++++++++++++++++"
                     self.network.thirtybirds.send(["path_server.stroke_paths_response",self.stroke_paths])
 
             except Exception as e:

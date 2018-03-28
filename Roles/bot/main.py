@@ -379,7 +379,7 @@ class Path_Server(threading.Thread):
         while True:
             try:
                 topic, msg = self.queue.get(True)
-                print topic, msg
+                print "path_server.add_to_queue",topic, msg
                 if topic == "path_server.stroke_paths_response":
                     self.stroke_paths = msg
                     self.stroke_paths_cursor = 0
@@ -581,6 +581,8 @@ class Message_Router(threading.Thread):
     
         synchronous functions:
             
+
+
 
     """
     def __init__(self):
