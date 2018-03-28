@@ -361,6 +361,7 @@ class Path_Server(threading.Thread):
             return False
 
     def generate_destination(self): # separated from run() for readability
+        """
         if self.location_correction_paths_cursor < len(self.location_correction_paths):
             next_path = self.location_correction_paths[self.location_correction_paths_cursor]
             self.location_correction_paths_cursor += 1
@@ -369,6 +370,7 @@ class Path_Server(threading.Thread):
             next_path = self.paths_to_available_paint[self.paths_to_available_paint_cursor]
             self.paths_to_available_paint_cursor += 1
             return next_path
+        """
         if self.stroke_paths_cursor < len(self.stroke_paths):
             next_path = self.stroke_paths[self.stroke_paths_cursor]
             self.stroke_paths_cursor += 1
@@ -386,8 +388,8 @@ class Path_Server(threading.Thread):
                 if topic == "path_server.stroke_paths_response":
                     self.stroke_paths = msg
                     self.stroke_paths_cursor = 0
-                    if self.outstanding_destination_request:
-                        mobility_loop.add_to_queue("path_server>mobility_loop.destination_response", self.generate_destination())
+                    #if self.outstanding_destination_request:
+                    mobility_loop.add_to_queue("path_server>mobility_loop.destination_response", self.generate_destination())
 
                 if topic == "location_server>path_server.location_correction_paths":
                     self.location_correction_paths = msg
@@ -648,8 +650,8 @@ class State_Checker(threading.Thread):
             #check that there are stroke_paths
             path_request_triggered = path_server.request_paths_if_needed()
             #check that there is fresh location data
-            if path_request_triggered:
-                path_server.add_to_queue(["mobility_loop>path_server.destination_request", self.location])
+            #if path_request_triggered:
+            #    path_server.add_to_queue(["mobility_loop>path_server.destination_request", self.location])
             time.sleep(2.0)
 
 state_checker = State_Checker()
