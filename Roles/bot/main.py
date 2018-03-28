@@ -697,7 +697,8 @@ def init(hostname):
     path_server.start()
     location_server.start()
     mobility_loop.start()
-    message_router.start()state_checker    
+    message_router.start()
+    state_checker.start()
     network.subscribe_to_topic("management.system_status_request")
     network.subscribe_to_topic("management.system_reboot_request")
     network.subscribe_to_topic("management.system_shutdown_request")
