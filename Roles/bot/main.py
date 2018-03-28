@@ -214,10 +214,13 @@ class Motor_Control(threading.Thread):
                     command, value, speed = self.command_queue.get(False) # check the command queue
                     print "-------> 5", command, value, speed
                     if command  == "rotate":
+                        print "-------> 6", command, value, speed
                         self.rotate(value, speed)
-                    if command  == "roll":
+                    if command  == "roll"
+                        print "-------> 7", command, value, speed:
                         self.roll(value, speed)
                     if command  == "brush":
+                        print "-------> 8", command, value, speed
                         self.brush_arm(value, speed)
                 except Queue.Empty:
                     pass
