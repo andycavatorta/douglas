@@ -353,6 +353,10 @@ class Path_Server(threading.Thread):
         self.location_correction_paths_cursor = 0
         self.outstanding_destination_request = False
 
+    def path_server.request_paths_if_needed(self):
+        if len(self.stroke_paths) == 0:
+            network.send("path_server.stroke_paths_request", True)
+
     def generate_destination(self): # separated from run() for readability
         if self.location_correction_paths_cursor < len(self.location_correction_paths):
             next_path = self.location_correction_paths[self.location_correction_paths_cursor]
@@ -587,7 +591,6 @@ class Message_Router(threading.Thread):
         self.queue.put(msg)
 
     def run(self):
-        mobility_loop.add_to_queue(["location_server>mobility_loop.location_response", [0.0,0.0,0.0]]) # just to get it started?
         while True:
             try:
                 topic, msg = self.queue.get(True)
@@ -630,6 +633,25 @@ class Message_Router(threading.Thread):
 message_router = Message_Router()
 message_router.daemon = True
 
+
+class State_Checker(threading.Thread):
+    # mostly used for loading data from async server
+    def __init__(self):
+        threading.Thread.__init__(self)
+        #self.queue = Queue.Queue()
+
+    #def add_to_queue(self, msg):
+    #    self.queue.put(msg)
+
+    def run(self):
+        while True:
+            #check that there are stroke_paths
+            path_server.request_paths_if_needed()
+            #check that there is fresh location data
+            time.sleep(2.0)
+
+state_checker = State_Checker()
+state_checker.daemon = True
 
 class Network(object):
     def __init__(self, hostname):
@@ -675,7 +697,7 @@ def init(hostname):
     path_server.start()
     location_server.start()
     mobility_loop.start()
-    message_router.start()
+    message_router.start()state_checker    
     network.subscribe_to_topic("management.system_status_request")
     network.subscribe_to_topic("management.system_reboot_request")
     network.subscribe_to_topic("management.system_shutdown_request")

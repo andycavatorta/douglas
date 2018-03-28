@@ -74,6 +74,7 @@ class Paths(threading.Thread):
         ]
 
     def add_to_queue(self, msg):
+        print "Paths.add_to_queue", msg
         self.queue.put(msg)
 
     def run(self):
@@ -82,7 +83,7 @@ class Paths(threading.Thread):
                 topic, msg = self.queue.get(True)
                 print topic, msg
                 if topic == "path_server.stroke_paths_request":
-                    self.network.thirtybirds.send("path_server.stroke_paths_re",self.stroke_paths)
+                    self.network.thirtybirds.send(["path_server.stroke_paths_response",self.stroke_paths])
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -174,6 +175,7 @@ class Main(threading.Thread):
         print "Main.network_status_handler", topic_msg
 
     def add_to_queue(self, topic, msg):
+        print "main.add_to_queue", topic, msg
         self.queue.put((topic, msg))
 
     def run(self):
