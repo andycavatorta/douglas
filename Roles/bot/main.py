@@ -311,7 +311,7 @@ class Spatial_Translation(threading.Thread):
         while True:
             try:
                 topic, msg = self.queue.get(True)
-                print "spatial_translation.run" topic, msg
+                print "spatial_translation.run", topic, msg
                 if topic == "mobility_loop>spatial_translation.set_destination":
                     origin, destination, brush = msg
                     distance, target_angle_relative_to_bot = self.translate_cartesian_to_vectors(origin, destination)
