@@ -208,9 +208,22 @@ class Motor_Control(threading.Thread):
 
     def run(self):
         while True:
+            # if all motors are finished, 
+            if self.finished["left_wheel"] and self.finished["right_wheel"] and self.finished["brush_arm"]:
+                try:
+                    command, value, speed = self.command_queue.get(False) # check the command queue
+                    print "-------> 5", command, value, speed
+                    if command  == "rotate":
+                        self.rotate(value, speed)
+                    if command  == "roll":
+                        self.roll(value, speed)
+                    if command  == "brush":
+                        self.brush_arm(value, speed)
+                except Queue.Empty:
+                    pass
             try:
                 # block on waiting for all motors to acknowledge completion or disable
-                command, value, speed = self.message_queue.get(True)
+                command, value, speed = self.message_queue.get(False)
                 print "Motor_Control.run", command, value, speed
                 if command in ["rotate","roll","brush_arm"]:
                     print "-------> 1"
@@ -227,26 +240,11 @@ class Motor_Control(threading.Thread):
                         "right_wheel":True,
                         "brush_arm":True
                     }
-                if self.finished["left_wheel"] and self.finished["right_wheel"] and self.finished["brush_arm"]:
-                    print "-------> 4"
-                    try:
-                        command, value, speed = self.command_queue.get(False)
-                        if command  == "rotate":
-                            self.rotate(value, speed)
-                            return
-                        if command  == "roll":
-                            self.roll(value, speed)
-                            return
-                        if command  == "brush":
-                            self.brush_arm(value, speed)
-                            return
-                    except Queue.Empty:
-                        print "-------> 5"
-                        pass
-
-            except Exception as e:
-                exc_type, exc_value, exc_traceback = sys.exc_info()
-                print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
+            except Queue.Empty:
+                pass
+            #except Exception as e:
+            #    exc_type, exc_value, exc_traceback = sys.exc_info()
+            #    print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
 
 motor_control = Motor_Control()
 motor_control.daemon = True
