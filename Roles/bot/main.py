@@ -216,8 +216,8 @@ class Motor_Control(threading.Thread):
                     if command  == "rotate":
                         print "-------> 6", command, value, speed
                         self.rotate(value, speed)
-                    if command  == "roll"
-                        print "-------> 7", command, value, speed:
+                    if command  == "roll":
+                        print "-------> 7", command, value, speed
                         self.roll(value, speed)
                     if command  == "brush":
                         print "-------> 8", command, value, speed
