@@ -389,7 +389,7 @@ class Path_Server(threading.Thread):
             self.paths_to_available_paint_cursor += 1
             return next_path
         """
-        print "generate_destination", self.stroke_paths_cursor, self.stroke_paths:
+        print "generate_destination", self.stroke_paths_cursor, self.stroke_paths
         if self.stroke_paths_cursor < len(self.stroke_paths):
             next_path = self.stroke_paths[self.stroke_paths_cursor]
             self.stroke_paths_cursor += 1
