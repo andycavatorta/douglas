@@ -356,6 +356,9 @@ class Path_Server(threading.Thread):
     def request_paths_if_needed(self):
         if len(self.stroke_paths) == 0:
             network.send("path_server.stroke_paths_request", True)
+            return True
+        else:
+            return False
 
     def generate_destination(self): # separated from run() for readability
         if self.location_correction_paths_cursor < len(self.location_correction_paths):
@@ -644,8 +647,10 @@ class State_Checker(threading.Thread):
     def run(self):
         while True:
             #check that there are stroke_paths
-            path_server.request_paths_if_needed()
+            path_request_triggered = path_server.request_paths_if_needed()
             #check that there is fresh location data
+            if path_request_triggered:
+                path_server.add_to_queue(["mobility_loop>path_server.destination_request", self.location])
             time.sleep(2.0)
 
 state_checker = State_Checker()
