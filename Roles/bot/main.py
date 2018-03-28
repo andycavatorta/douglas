@@ -372,11 +372,10 @@ class Path_Server(threading.Thread):
         self.queue.put(msg)
 
     def run(self):
-        network.send("path_server.stroke_paths_request", True)
         while True:
             try:
                 topic, msg = self.queue.get(True)
-                #print topic, msg
+                print topic, msg
                 if topic == "path_server.stroke_paths_response":
                     self.stroke_paths = msg
                     self.stroke_paths_cursor = 0
@@ -392,7 +391,6 @@ class Path_Server(threading.Thread):
                     self.paths_to_available_paint_cursor = 0
 
                 if topic == "mobility_loop>path_server.destination_request":
-                    print "++++++++++++++++++++++++++++++++++++"
                     if self.stroke_paths == []: # if stroke_paths have not been received
                         self.outstanding_destination_request == True
                         network.send("path_server.stroke_paths_request", True)
@@ -509,14 +507,11 @@ location_server.daemon = True
 class Mobility_Loop(threading.Thread):
     """
         This class 
-        
         incoming message topics:
             "location_server>mobility_loop.location_response"
         outgoing message topics:
             "mobility_loop>location_server.location_request"
         synchronous functions:
-            
-
     """
     def __init__(self):
         threading.Thread.__init__(self)
@@ -592,9 +587,7 @@ class Message_Router(threading.Thread):
         self.queue.put(msg)
 
     def run(self):
-
         mobility_loop.add_to_queue(["location_server>mobility_loop.location_response", [0.0,0.0,0.0]]) # just to get it started?
-
         while True:
             try:
                 topic, msg = self.queue.get(True)
@@ -620,7 +613,7 @@ class Message_Router(threading.Thread):
                 if topic == "mobility_loop.enable_request":
                     mobility_loop.add_to_queue(topic, msg)
                     continue
-                if topic == "path_server.paths_response":
+                if topic == "path_server.stroke_paths_response":
                     path_server.add_to_queue(topic, msg)
                     continue
                 if topic == "path_server.path_to_available_paint_response":

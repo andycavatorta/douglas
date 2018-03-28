@@ -61,9 +61,17 @@ leases.daemon = True
 
 
 class Paths(threading.Thread):
-    def __init__(self):
+    def __init__(self, network):
         threading.Thread.__init__(self)
+        self.network = network
         self.queue = Queue.Queue()
+        self.stroke_paths = [
+            [0.0, 0.0, True],
+            [1.0, 0.0, False],
+            [1.0, 1.0, True],
+            [0.0, 1.0, False],
+            [0.0, 0.0, True],
+        ]
 
     def add_to_queue(self, msg):
         self.queue.put(msg)
@@ -73,13 +81,13 @@ class Paths(threading.Thread):
             try:
                 topic, msg = self.queue.get(True)
                 print topic, msg
+                if topic == "path_server.stroke_paths_request":
+                    self.network.thirtybirds.send("path_server.stroke_paths_re",self.stroke_paths)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
 
-paths = Paths()
-paths.daemon = True
 
 
 
@@ -133,10 +141,10 @@ class Main(threading.Thread):
         threading.Thread.__init__(self)
         self.network = Network(hostname, self.network_message_handler, self.network_status_handler)
         self.queue = Queue.Queue()
-        #self.pedals = Pedals(self.add_to_queue)
-        #self.pedals.daemon = True
-        #self.pedals.start()
-        #self.network.thirtybirds.subscribe_to_topic("system")  # subscribe to all system messages
+
+        self.paths = Paths(self.network)
+        self.paths.daemon = True
+
         self.network.thirtybirds.subscribe_to_topic("location_server.location_from_lps_response")
         self.network.thirtybirds.subscribe_to_topic("mobility_loop.lease_request")
         self.network.thirtybirds.subscribe_to_topic("mobility_loop.enable_request")
@@ -180,7 +188,7 @@ class Main(threading.Thread):
                 if topic == "mobility_loop.enable_request":
                     pass
                 if topic == "path_server.stroke_paths_request":
-                    pass
+                    self.paths.add_to_queue(["path_server.stroke_paths_request", False])
                 if topic == "path_server.paths_response":
                     pass
                 if topic == "path_server.path_to_available_paint_response":
