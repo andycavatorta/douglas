@@ -213,18 +213,22 @@ class Motor_Control(threading.Thread):
                 command, value, speed = self.message_queue.get(True)
                 print "Motor_Control.run", command, value, speed
                 if command in ["rotate","roll","brush_arm"]:
+                    print "-------> 1"
                     self.command_queue.put([command, value, speed])
                 if command == "enable":
+                    print "-------> 2"
                     stepper_pulses.set("left_wheel", "enable", value)
                     stepper_pulses.set("right_wheel", "enable", value)
                     stepper_pulses.set("brush_arm", "enable", value)
                 if command == "finished":
+                    print "-------> 3"
                     self.finished = {
                         "left_wheel":True,
                         "right_wheel":True,
                         "brush_arm":True
                     }
                 if self.finished["left_wheel"] and self.finished["right_wheel"] and self.finished["brush_arm"]:
+                    print "-------> 4"
                     try:
                         command, value, speed = self.command_queue.get(False)
                         if command  == "rotate":
@@ -237,6 +241,7 @@ class Motor_Control(threading.Thread):
                             self.brush_arm(value, speed)
                             return
                     except Queue.Empty:
+                        print "-------> 5"
                         pass
 
             except Exception as e:
