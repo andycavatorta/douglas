@@ -104,8 +104,8 @@ class Motor_Control(threading.Thread):
         stepper_pulses.set("right_wheel", "speed", speed)
         stepper_pulses.set("brush_arm", "speed", speed)
 
-        stepper_pulses.set("left_wheel", "steps", left_steps)
-        stepper_pulses.set("right_wheel", "steps", right_steps)
+        stepper_pulses.set("left_wheel", "steps", left_steps * 4)
+        stepper_pulses.set("right_wheel", "steps", right_steps * 4)
         stepper_pulses.set("brush_arm", "steps", 0)
 
     def roll(self, distance, speed): # distance units are in mm
@@ -243,6 +243,7 @@ class Motor_Control(threading.Thread):
                         "right_wheel":True,
                         "brush_arm":True
                     }
+                    mobility_loop.add_to_queue("motion.destination_reached", True)
             except Queue.Empty:
                 pass
             #except Exception as e:
