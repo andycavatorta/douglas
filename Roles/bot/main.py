@@ -416,18 +416,12 @@ path_server.daemon = True
 class Location_Server(threading.Thread):
     """
         This class tracks the current location and orientation using odometry from the Navigator and location data from the LPS 
-
         incoming message topics:
             location_from_lps
             location_from_odometry
-
         outgoing message topics:
             location_from_server
-
-
         synchronous functions:
-            
-
     """
     def __init__(self):
         threading.Thread.__init__(self)
@@ -447,6 +441,7 @@ class Location_Server(threading.Thread):
         }
         self.location_disparity_threshold = settings.location_server["location_disparity_threshold"]
         self.outstanding_location_request = False
+        self.lps_data_is_fresh = False
 
     def detect_location_disparity(self):
         for key in ["x","y","orientation","timestamp"]:
@@ -496,10 +491,14 @@ class Location_Server(threading.Thread):
                         self.location_from_odometry["y"] += math.sin(math.radians(self.location_from_odometry["orientation"]))
                 
                 if topic == "mobility_loop>location_server.location_request":
-                    if self.location_from_odometry["timestamp"] is None: # start up case
-                        self.outstanding_location_request = True   
-                    else:
+                    if self.lps_data_is_fresh:
+                        pass
+                    else: 
                         mobility_loop.add_to_queue("location_server>mobility_loop.location_response", self.location_from_odometry)
+                    #if self.location_from_odometry["timestamp"] is None: # start up case
+                    #    self.outstanding_location_request = True   
+                    #else:
+                    #    mobility_loop.add_to_queue("location_server>mobility_loop.location_response", self.location_from_odometry)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
