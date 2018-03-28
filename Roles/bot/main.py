@@ -613,7 +613,7 @@ class Message_Router(threading.Thread):
                     network.send("management.scripts_update_response", self.management.scripts_update(msg))
                     continue
                 if topic == "mobility_loop.lease_response":
-                    mobility_loop.add_to_queue(topic, msg)
+                    mobility_loop.add_to_queue([topic, msg])
                     continue
                 if topic == "mobility_loop.enable_request":
                     mobility_loop.add_to_queue(topic, msg)

@@ -39,7 +39,7 @@ class Location(threading.Thread):
 
 class Leases(threading.Thread):
     def __init__(self, network):
-        threading.Thread.__init__(self, network)
+        threading.Thread.__init__(self)
         self.network = network
         self.queue = Queue.Queue()
 
@@ -146,7 +146,7 @@ class Main(threading.Thread):
         self.paths.daemon = True
         self.paths.start()
 
-        self.leases = Leases()
+        self.leases = Leases(self.network)
         self.leases.daemon = True
         self.leases.start()
 
@@ -156,7 +156,7 @@ class Main(threading.Thread):
 
         self.network.thirtybirds.subscribe_to_topic("location_server.location_from_lps_response")
         self.network.thirtybirds.subscribe_to_topic("mobility_loop.lease_request")
-        self.network.thirtybirds.subscribe_to_topic("mobility_loop.enable_request"), network
+        self.network.thirtybirds.subscribe_to_topic("mobility_loop.enable_request")
         self.network.thirtybirds.subscribe_to_topic("path_server.stroke_paths_request")
         self.network.thirtybirds.subscribe_to_topic("path_server.paths_response")
         self.network.thirtybirds.subscribe_to_topic("path_server.path_to_available_paint_response")
@@ -194,7 +194,7 @@ class Main(threading.Thread):
                 if topic == "location_server.location_from_lps_response":
                     pass
                 if topic == "mobility_loop.lease_request":
-                    self.leases.add_to_queue("mobility_loop.lease_request", msg)
+                    self.leases.add_to_queue(["mobility_loop.lease_request", msg])
                     pass
                 if topic == "mobility_loop.enable_request":
                     pass
