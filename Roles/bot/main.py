@@ -545,7 +545,7 @@ class Mobility_Loop(threading.Thread):
         threading.Thread.__init__(self)
         self.queue = Queue.Queue()
         #self.current_task = ["wait_for_location," "wait_for_destination","wait_for_lease","wait_for_motion"][0] # < options listed for you, dear programmer
-        self.location = [0,0]
+        self.location = [0,0,0.0]
         self.destination =  None
         self.lease = None
         self.motion_complete = False
