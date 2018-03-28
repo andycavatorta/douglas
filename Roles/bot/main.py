@@ -179,20 +179,24 @@ class Motor_Control(threading.Thread):
                 right_distance = self.pulse_odometer["right_wheel"] / float(self.steps_per_rotation) * self.wheel_circumference * ( 1 if settings.motor_control["stepper_motors"]["right_wheel"]["backwards_orientation"] else -1)
                 average_distance = (abs(left_distance) + abs(right_distance)) / 2.0
                 if left_distance < 0 and right_distance > 0: # rotate left
+                    print "-----------------------motor_control.motor_callback  rotate left", left_distance, right_distance
                     proportion_of_circle = average_distance / self.circumference_of_rotation
                     degrees = proportion_of_circle * 360.0
                     #print "motor_callback", motor_name, msg_type, data, degrees
                     location_server.add_to_queue(["motor_control>location_server.relative_odometry", ["rotate", degrees]])
                     return
                 if left_distance > 0 and right_distance < 0: # rotate right
+                    print "-----------------------motor_control.motor_callback  rotate right", left_distance, right_distance
                     proportion_of_circle = average_distance / self.circumference_of_rotation
                     degrees = proportion_of_circle * 360.0
                     location_server.add_to_queue(["motor_control>location_server.relative_odometry", ["rotate", -degrees]])
                     return
                 if left_distance > 0 and right_distance > 0: # roll forward
+                    print "-----------------------motor_control.motor_callback  forward", left_distance, right_distance
                     location_server.add_to_queue(["motor_control>location_server.relative_odometry", ["roll", average_distance]])
                     return
                 if left_distance < 0 and right_distance < 0: # roll backward
+                    print "-----------------------motor_control.motor_callback  backward", left_distance, right_distance
                     location_server.add_to_queue(["motor_control>location_server.relative_odometry", ["roll", -average_distance]])
                     return
 
@@ -491,7 +495,6 @@ class Location_Server(threading.Thread):
                         mobility_loop.add_to_queue("location_server>path_server.location_correction_paths", self.location_from_lps)
 
                 if topic == "spatial_translation>location_server.location_from_odometry":
-                    print "-----------------------spatial_translation>location_server.location_from_odometry", msg
                     self.location_from_odometry["x"] = float(msg["x"])
                     self.location_from_odometry["y"] = float(msg["y"])
                     self.location_from_odometry["orientation"] = float(msg["orientation"])
