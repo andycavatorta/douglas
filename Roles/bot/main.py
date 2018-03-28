@@ -575,7 +575,7 @@ class Mobility_Loop(threading.Thread):
 
                 if topic == "motion.destination_reached":
                     self.motion_complete = True
-                    location_server.add_to_queue("mobility_loop>location_server.location_request", True)
+                    location_server.add_to_queue(["mobility_loop>location_server.location_request", True])
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
