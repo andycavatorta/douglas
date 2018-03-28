@@ -243,7 +243,6 @@ class Motor_Control(threading.Thread):
                         "right_wheel":True,
                         "brush_arm":True
                     }
-                    mobility_loop.add_to_queue("motion.destination_reached", True)
             except Queue.Empty:
                 pass
             #except Exception as e:
