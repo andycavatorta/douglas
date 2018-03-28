@@ -550,7 +550,7 @@ class Mobility_Loop(threading.Thread):
                     self.destination = msg
                     network.send("mobility_loop.lease_request", [self.location, self.destination])
 
-                if topic == "mobility_loop.lease_response'":
+                if topic == "mobility_loop.lease_response":
                     self.lease = msg
                     spatial_translation.add_to_queue("mobility_loop>spatial_translation.set_destination", [self.location, self.destination])
 
