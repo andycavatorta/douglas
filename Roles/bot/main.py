@@ -245,7 +245,7 @@ class Spatial_Translation(threading.Thread):
     It also generates high-level commands for the motor controller [ roll(meters), rotate(degrees), brush(["up"|"down"]) ]
 
     incoming message topics:
-        destination ( location["x"], location["y"], location["orientation"], destination["x"], destination["y"] )
+        destination ( location["x"], location["y"], location["orientation"], destination_x, destination_y )
         enable ([True|False])
 
     outgoing message topics:
@@ -266,37 +266,40 @@ class Spatial_Translation(threading.Thread):
 
     def translate_cartesian_to_vectors(self, origin, destination):
         # calculate distance
+        origin_x, origin_y = origin # for simplicity
+        destination_x, destination_y, brush = destination # for simplicity
 
-        distance = math.sqrt(((origin["x"] - destination["x"])**2) + ((origin["y"] - destination["y"])**2))
+
+        distance = math.sqrt(((origin_x - destination_x)**2) + ((origin_y - destination_y)**2))
         # calculate absolute heading relative to Cartesian space, not relative to bot
-        if origin["x"] == destination["x"] and origin["y"] == destination["y"]: # no movement
+        if origin_x == destination_x and origin_y == destination_y: # no movement
             return (0.0, 0.0)
-        elif origin["x"] < destination["x"] and origin["y"] == destination["y"]: # x-axis positive
+        elif origin_x < destination_x and origin_y == destination_y: # x-axis positive
             return (distance, 0.0)
-        elif origin["x"] > destination["x"] and origin["y"] == destination["y"]: # x-axis negative
+        elif origin_x > destination_x and origin_y == destination_y: # x-axis negative
             return (distance, 180.0)
-        elif origin["x"] == destination["x"] and origin["y"] < destination["y"]: # y-axis positive
+        elif origin_x == destination_x and origin_y < destination_y: # y-axis positive
             return (distance, 90.0)
-        elif origin["x"] == destination["x"] and origin["y"] > destination["y"]: # y-axis negative
+        elif origin_x == destination_x and origin_y > destination_y: # y-axis negative
             return (distance, -90.0)
-        elif origin["x"] < destination["x"] and origin["y"] < destination["y"]: # somewhere in quadrant 1
-            target_angle_relative_to_Cartesian_space =  math.degrees(math.acos( abs(destination["x"]-origin["x"]) / distance) )
+        elif origin_x < destination_x and origin_y < destination_y: # somewhere in quadrant 1
+            target_angle_relative_to_Cartesian_space =  math.degrees(math.acos( abs(destination_x-origin_x) / distance) )
             target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin["orientation"]
             return (distance, target_angle_relative_to_bot)
-        elif origin["x"] > destination["x"] and origin["y"] < destination["y"]: # somewhere in quadrant 2
-            target_angle_relative_to_Cartesian_space =  90 + math.degrees(math.acos( abs(destination["x"]-origin["x"]) / distance) )
+        elif origin_x > destination_x and origin_y < destination_y: # somewhere in quadrant 2
+            target_angle_relative_to_Cartesian_space =  90 + math.degrees(math.acos( abs(destination_x-origin_x) / distance) )
             target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin["orientation"]
             return (distance, target_angle_relative_to_bot)
-        elif origin["x"] > destination["x"] and origin["y"] > destination["y"]: # somewhere in quadrant 3
-            target_angle_relative_to_Cartesian_space =  180 + math.degrees(math.acos( abs(destination["x"]-origin["x"]) / distance) )
+        elif origin_x > destination_x and origin_y > destination_y: # somewhere in quadrant 3
+            target_angle_relative_to_Cartesian_space =  180 + math.degrees(math.acos( abs(destination_x-origin_x) / distance) )
             target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin["orientation"]
             return (distance, target_angle_relative_to_bot)
-        elif origin["x"] < destination["x"] and origin["y"] > destination["y"]: # somewhere in quadrant 4
-            target_angle_relative_to_Cartesian_space =  270 + math.degrees(math.acos( abs(destination["x"]-origin["x"]) / distance) )
+        elif origin_x < destination_x and origin_y > destination_y: # somewhere in quadrant 4
+            target_angle_relative_to_Cartesian_space =  270 + math.degrees(math.acos( abs(destination_x-origin_x) / distance) )
             target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin["orientation"]
             return (distance, target_angle_relative_to_bot)
         else :
-            print "Coordinates_To_Vectors.calculate_vectors_from_target_coordinates cannot assign quadrant", origin["x"], destination["x"], origin["y"], destination["y"]
+            print "Coordinates_To_Vectors.calculate_vectors_from_target_coordinates cannot assign quadrant", origin_x, destination_x, origin_y, destination_y
 
 
     def translate_vectors_to_cartesian(self):
@@ -314,8 +317,9 @@ class Spatial_Translation(threading.Thread):
                 topic, msg = self.queue.get(True)
                 print "spatial_translation.run", topic, msg
                 if topic == "mobility_loop>spatial_translation.set_destination":
-                    origin, destination, brush = msg
+                    origin, destination = msg
                     distance, target_angle_relative_to_bot = self.translate_cartesian_to_vectors(origin, destination)
+                    brush = destination[2]
                     print "distance, target_angle_relative_to_bot", distance, target_angle_relative_to_bot
                     self.translate_vectors_to_motor_commands(brush, distance, target_angle_relative_to_bot)
                     continue
