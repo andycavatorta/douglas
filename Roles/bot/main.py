@@ -552,7 +552,7 @@ class Mobility_Loop(threading.Thread):
 
                 if topic == "mobility_loop.lease_response":
                     self.lease = msg
-                    spatial_translation.add_to_queue("mobility_loop>spatial_translation.set_destination", [self.location, self.destination])
+                    spatial_translation.add_to_queue(["mobility_loop>spatial_translation.set_destination", [self.location, self.destination]])
 
                 if topic == "motion.destination_reached":
                     self.motion_complete = True
