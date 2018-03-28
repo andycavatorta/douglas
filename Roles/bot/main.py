@@ -212,15 +212,11 @@ class Motor_Control(threading.Thread):
             if self.finished["left_wheel"] and self.finished["right_wheel"] and self.finished["brush_arm"]:
                 try:
                     command, value, speed = self.command_queue.get(False) # check the command queue
-                    print "-------> 5", command, value, speed
                     if command  == "rotate":
-                        print "-------> 6", command, value, speed
                         self.rotate(value, speed)
                     if command  == "roll":
-                        print "-------> 7", command, value, speed
                         self.roll(value, speed)
                     if command  == "brush":
-                        print "-------> 8", command, value, speed
                         self.brush_arm(value, speed)
                 except Queue.Empty:
                     pass
@@ -229,15 +225,12 @@ class Motor_Control(threading.Thread):
                 command, value, speed = self.message_queue.get(False)
                 print "Motor_Control.run", command, value, speed
                 if command in ["rotate","roll","brush"]:
-                    print "-------> 1"
                     self.command_queue.put([command, value, speed])
                 if command == "enable":
-                    print "-------> 2"
                     stepper_pulses.set("left_wheel", "enable", value)
                     stepper_pulses.set("right_wheel", "enable", value)
                     stepper_pulses.set("brush_arm", "enable", value)
                 if command == "finished":
-                    print "-------> 3"
                     self.finished = {
                         "left_wheel":True,
                         "right_wheel":True,
@@ -498,6 +491,7 @@ class Location_Server(threading.Thread):
                         mobility_loop.add_to_queue("location_server>path_server.location_correction_paths", self.location_from_lps)
 
                 if topic == "spatial_translation>location_server.location_from_odometry":
+                    print "-----------------------spatial_translation>location_server.location_from_odometry", msg
                     self.location_from_odometry["x"] = float(msg["x"])
                     self.location_from_odometry["y"] = float(msg["y"])
                     self.location_from_odometry["orientation"] = float(msg["orientation"])
