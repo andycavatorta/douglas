@@ -261,7 +261,7 @@ class Spatial_Translation(threading.Thread):
         #self.location_from_odometry = None
 
     def add_to_queue(self, msg):
-        print "spatial_translation.add_to_queue", topic, msg
+        print "spatial_translation.add_to_queue", msg
         self.queue.put(msg)
 
     def translate_cartesian_to_vectors(self, origin, destination):
