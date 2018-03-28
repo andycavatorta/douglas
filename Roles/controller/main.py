@@ -65,7 +65,7 @@ class Paths(threading.Thread):
         self.network = network
         self.queue = Queue.Queue()
         self.stroke_paths = [
-            [0.0, 0.0, True],
+            [0.0, 0.25, True],
             [0.25, 0.0, False],
             [0.25, 0.25, True],
             [0.0, 0.25, False],
