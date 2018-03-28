@@ -594,7 +594,7 @@ class Message_Router(threading.Thread):
         while True:
             try:
                 topic, msg = self.queue.get(True)
-                #print topic, msg
+                print "message_router.main", topic, msg
                 if topic == "management.system_status_request":
                     network.send("management.system_status_response", self.management.get_system_status(msg))
                     continue
