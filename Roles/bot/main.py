@@ -306,9 +306,9 @@ class Spatial_Translation(threading.Thread):
         return
 
     def translate_vectors_to_motor_commands(self, brush, distance, target_angle_relative_to_bot):
-        motor_control.add_to_queue("brush", brush, 1.0)
-        motor_control.add_to_queue("rotate", target_angle_relative_to_bot, 1.0)
-        motor_control.add_to_queue("roll", distance, 1.0)
+        motor_control.add_to_queue(["brush", brush, 1.0])
+        motor_control.add_to_queue(["rotate", target_angle_relative_to_bot, 1.0])
+        motor_control.add_to_queue(["roll", distance, 1.0])
         return
 
     def run(self):
