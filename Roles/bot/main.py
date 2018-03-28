@@ -353,7 +353,7 @@ class Path_Server(threading.Thread):
         self.location_correction_paths_cursor = 0
         self.outstanding_destination_request = False
 
-    def path_server.request_paths_if_needed(self):
+    def request_paths_if_needed(self):
         if len(self.stroke_paths) == 0:
             network.send("path_server.stroke_paths_request", True)
 
