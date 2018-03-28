@@ -425,7 +425,7 @@ class Path_Server(threading.Thread):
                         self.outstanding_destination_request == True
                         network.send("path_server.stroke_paths_request", True)
                     else:
-                        mobility_loop.add_to_queue("path_server>mobility_loop.destination_response", self.generate_destination())
+                        mobility_loop.add_to_queue(["path_server>mobility_loop.destination_response", self.generate_destination()])
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
