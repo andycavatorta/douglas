@@ -517,7 +517,7 @@ class Location_Server(threading.Thread):
                     if self.lps_data_is_fresh:
                         pass
                     else: 
-                        mobility_loop.add_to_queue(["location_server>mobility_loop.location_response"], self.location_from_odometry)
+                        mobility_loop.add_to_queue(["location_server>mobility_loop.location_response", self.location_from_odometry])
                     #if self.location_from_odometry["timestamp"] is None: # start up case
                     #    self.outstanding_location_request = True   
                     #else:
