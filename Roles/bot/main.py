@@ -209,7 +209,7 @@ class Motor_Control(threading.Thread):
             try:
                 # block on waiting for all motors to acknowledge completion or disable
                 command, value, speed = self.message_queue.get(True)
-                #print "Motor_Control.run", command, value, speed
+                print "Motor_Control.run", command, value, speed
                 if command in ["rotate","roll","brush_arm"]:
                     self.command_queue.put([command, value, speed])
                 if command == "enable":
@@ -311,10 +311,11 @@ class Spatial_Translation(threading.Thread):
         while True:
             try:
                 topic, msg = self.queue.get(True)
-                #print topic, msg
+                print "spatial_translation.run" topic, msg
                 if topic == "mobility_loop>spatial_translation.set_destination":
                     origin, destination, brush = msg
                     distance, target_angle_relative_to_bot = self.translate_cartesian_to_vectors(origin, destination)
+                    print "distance, target_angle_relative_to_bot", distance, target_angle_relative_to_bot
                     self.translate_vectors_to_motor_commands(brush, distance, target_angle_relative_to_bot)
                     continue
 
