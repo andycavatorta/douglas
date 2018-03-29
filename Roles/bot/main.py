@@ -210,6 +210,7 @@ class Motor_Control(threading.Thread):
         while True:
             try:
                 command = self.message_queue.get(True)
+                print "-----> command", command
                 if command["action"] == "rotate":
                     self.rotate(command["value"], command["speed"])
                 if command["action"] == "roll":
