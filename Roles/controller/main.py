@@ -46,11 +46,11 @@ class Paths():
             "douglas08":self.stroke_paths_tests["octogon"],
             "douglas09":self.stroke_paths_tests["octogon"],
         }
-    def send_stroke_paths(bot_id=False):
+    def send_stroke_paths(self, bot_id=False):
             if bot_id:
                 self.network.thirtybirds.send("path_server.stroke_paths_response_{}".format(bot_id),self.stroke_paths[bot_id])
             else:
-                for bot_id in "douglas00":
+                for bot_id in self.stroke_paths:
                     self.network.thirtybirds.send("path_server.stroke_paths_response_{}".format(bot_id),self.stroke_paths[bot_id])
 
 

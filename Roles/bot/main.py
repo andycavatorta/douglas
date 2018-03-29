@@ -37,7 +37,7 @@ class Network(object):
                 msg = eval(msg)
             except Exception:
                 pass
-        message_router.add_to_queue([topic, msg])
+        print topic, msg
 
     def network_status_handler(self, topic_msg):
         # this method runs in the thread of the caller, not the tread of Main
