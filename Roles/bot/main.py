@@ -153,6 +153,7 @@ class Motor_Control(threading.Thread):
         #number_of_pulses = brush_position_up
         #number_of_pulses = settings.motor_control["stepper_motors"] if distance else -settings.motor_control["stepper_motors"]
         self.current_motion = "stop"
+        self.previous_motion = "" # used only for debug
 
         self.finished = {
             "left_wheel":True,
@@ -176,6 +177,9 @@ class Motor_Control(threading.Thread):
     def motor_callback(self, motor_name, msg_type, data):
         
         if msg_type == "steps_cursor":
+            if self.previous_motion != self.current_motion:
+                print " self.current_motion",  self.current_motion, motor_name, data
+                self.previous_motion = self.current_motion
             if motor_name in ["left_wheel", "right_wheel"]:
                 self.pulse_odometer[motor_name] = data # collect pulse odometer for each motor
                 left_distance  = self.pulse_odometer["left_wheel"]  / float(self.steps_per_rotation) * self.wheel_circumference * ( 1 if settings.motor_control["stepper_motors"]["left_wheel"]["backwards_orientation"] else -1)
@@ -566,8 +570,9 @@ class Mobility_Loop(threading.Thread):
                     path_server.add_to_queue(["mobility_loop>path_server.destination_request", self.location])
 
                 if topic == "path_server>mobility_loop.destination_response":
-                    self.destination = msg
-                    network.send("mobility_loop.lease_request", [self.location, self.destination])
+                    if msg is not None:
+                        self.destination = msg
+                        network.send("mobility_loop.lease_request", [self.location, self.destination])
 
                 if topic == "mobility_loop.lease_response":
                     self.lease = msg
