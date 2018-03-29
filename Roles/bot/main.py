@@ -105,7 +105,7 @@ def init(hostname):
     network.subscribe_to_topic("mobility_loop.lease_response")
     network.subscribe_to_topic("mobility_loop.enable_request")
     #network.subscribe_to_topic("path_server.stroke_paths_response")
-    network.subscribe_to_topic("path_server.stroke_paths_response_{}".format(self.hostname))
+    network.subscribe_to_topic("path_server.stroke_paths_response_{}".format(hostname))
     network.subscribe_to_topic("path_server.paths_to_available_paint_response")
     network.subscribe_to_topic("location_server.location_from_lps_response")
     network.send("present", True)
