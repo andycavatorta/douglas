@@ -216,7 +216,7 @@ class Motor_Control(threading.Thread):
             try:
                 command = self.message_queue.get(True)
                 print "-----> command", command
-                if motor_name in ["left_wheel", "right_wheel", "brush_arm"]:
+                if command["action"] in ["rotate", "roll", "brush"]:
                     self.finished = {
                         "left_wheel":False,
                         "right_wheel":False,
