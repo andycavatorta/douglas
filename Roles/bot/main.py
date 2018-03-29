@@ -317,7 +317,7 @@ def init(hostname):
     #path_server.start()
     #location_server.start()
     motor_control.start()
-    spatial_translation.start()    
+    #spatial_translation.start()
     #mobility_loop.start()
     #message_router.start()
     #state_checker.start()
