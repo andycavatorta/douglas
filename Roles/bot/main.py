@@ -55,6 +55,7 @@ class Motor_Control(threading.Thread):
         self.circumference_of_rotation = self.distance_between_wheels * math.pi
 
         self.brush_position_up = False
+        self.current_motion = ["stop","rotate_right","rotate_left","roll_forward","roll_backward"][0]
 
         self.finished = {
             "left_wheel":True,
@@ -78,16 +79,16 @@ class Motor_Control(threading.Thread):
     def rotate(self, degrees, speed):
         print "Motor_Control.rotate", degrees, speed
         self.speed = float(abs(speed))
-        print "float(abs(degrees))", float(abs(degrees))
+        #print "float(abs(degrees))", float(abs(degrees))
         proportion_of_circle = float(abs(degrees)) / 360.0
-        print "proportion_of_circle", proportion_of_circle
-
+        #print "proportion_of_circle", proportion_of_circle
         length_of_arc = proportion_of_circle * self.circumference_of_rotation
-        print "length_of_arc", length_of_arc
-
+        #print "length_of_arc", length_of_arc
         pulses_of_arc = length_of_arc * self.steps_per_rotation
-        print "pulses_of_arc", pulses_of_arc
+        #print "pulses_of_arc", pulses_of_arc
         left_steps, right_steps = (pulses_of_arc, -pulses_of_arc) if degrees > 0 else (-pulses_of_arc, pulses_of_arc)
+
+        self.current_motion = "rotate_right" if degrees > 0 else "rotate_left"
 
         self.finished = {
             "left_wheel":False,
@@ -112,6 +113,8 @@ class Motor_Control(threading.Thread):
         print "Motor_Control.roll", distance, speed
         number_of_wheel_rotations = abs(distance) / self.wheel_circumference
         number_of_pulses = number_of_wheel_rotations * self.steps_per_rotation
+
+        self.current_motion = "roll_forward" if distance > 0 else "roll_backward"
 
         self.finished = {
             "left_wheel":False,
@@ -149,6 +152,7 @@ class Motor_Control(threading.Thread):
 
         #number_of_pulses = brush_position_up
         #number_of_pulses = settings.motor_control["stepper_motors"] if distance else -settings.motor_control["stepper_motors"]
+        self.current_motion = "stop"
 
         self.finished = {
             "left_wheel":True,
@@ -178,25 +182,22 @@ class Motor_Control(threading.Thread):
                 left_distance  = self.pulse_odometer["left_wheel"]  / float(self.steps_per_rotation) * self.wheel_circumference * ( 1 if settings.motor_control["stepper_motors"]["left_wheel"]["backwards_orientation"] else -1)
                 right_distance = self.pulse_odometer["right_wheel"] / float(self.steps_per_rotation) * self.wheel_circumference * ( 1 if settings.motor_control["stepper_motors"]["right_wheel"]["backwards_orientation"] else -1)
                 average_distance = (abs(left_distance) + abs(right_distance)) / 2.0
-                if left_distance < 0 and right_distance > 0: # rotate left
-                    print "-----------------------motor_control.motor_callback  rotate left", left_distance, right_distance
+
+                if self.current_motion == "rotate_left": # rotate left
                     proportion_of_circle = average_distance / self.circumference_of_rotation
                     degrees = proportion_of_circle * 360.0
                     #print "motor_callback", motor_name, msg_type, data, degrees
                     location_server.add_to_queue(["motor_control>location_server.relative_odometry", ["rotate", degrees]])
                     return
-                if left_distance > 0 and right_distance < 0: # rotate right
-                    print "-----------------------motor_control.motor_callback  rotate right", left_distance, right_distance
+                if self.current_motion == "rotate_right": # rotate right
                     proportion_of_circle = average_distance / self.circumference_of_rotation
                     degrees = proportion_of_circle * 360.0
                     location_server.add_to_queue(["motor_control>location_server.relative_odometry", ["rotate", -degrees]])
                     return
-                if left_distance > 0 and right_distance > 0: # roll forward
-                    print "-----------------------motor_control.motor_callback  forward", left_distance, right_distance
+                if self.current_motion == "roll_forward": # roll forward
                     location_server.add_to_queue(["motor_control>location_server.relative_odometry", ["roll", average_distance]])
                     return
-                if left_distance < 0 and right_distance < 0: # roll backward
-                    print "-----------------------motor_control.motor_callback  backward", left_distance, right_distance
+                if self.current_motion == "roll_backward": # roll backward
                     location_server.add_to_queue(["motor_control>location_server.relative_odometry", ["roll", -average_distance]])
                     return
 
