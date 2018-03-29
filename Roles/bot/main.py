@@ -148,8 +148,8 @@ class Motor_Control(threading.Thread):
         self.previous_motion = "" # used only for debug
 
         self.finished = {
-            "left_wheel":True,
-            "right_wheel":True,
+            "left_wheel":False,
+            "right_wheel":False,
             "brush_arm":False
         }
         self.pulse_odometer = {
@@ -170,6 +170,9 @@ class Motor_Control(threading.Thread):
         
         if msg_type != "steps_cursor":
             print "motor_callback", motor_name, msg_type, data
+
+        if msg_type == "finished":
+            self.finished[motor_name] = True
         """
         if msg_type == "steps_cursor":
             if self.previous_motion != self.current_motion:
@@ -213,12 +216,21 @@ class Motor_Control(threading.Thread):
             try:
                 command = self.message_queue.get(True)
                 print "-----> command", command
+                if motor_name in ["left_wheel", "right_wheel", "brush_arm"]:
+                    self.finished = {
+                        "left_wheel":False,
+                        "right_wheel":False,
+                        "brush_arm":False
+                    }
                 if command["action"] == "rotate":
                     self.rotate(command["value"], command["speed"])
                 if command["action"] == "roll":
                     self.roll(command["value"], command["speed"])
                 if command["action"] == "brush":
                     self.brush_arm(command["value"], command["speed"])
+                while not self.finished["left_wheel"] or not self.finished["right_wheel"] or not self.finished["brush_arm"]:
+                    time.sleep(0.1)
+
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
