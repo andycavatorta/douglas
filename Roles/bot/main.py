@@ -176,13 +176,12 @@ class Motor_Control(threading.Thread):
     def motor_callback(self, motor_name, msg_type, data):
         
         if msg_type == "steps_cursor":
+            print self.current_motion
             if motor_name in ["left_wheel", "right_wheel"]:
-                
                 self.pulse_odometer[motor_name] = data # collect pulse odometer for each motor
                 left_distance  = self.pulse_odometer["left_wheel"]  / float(self.steps_per_rotation) * self.wheel_circumference * ( 1 if settings.motor_control["stepper_motors"]["left_wheel"]["backwards_orientation"] else -1)
                 right_distance = self.pulse_odometer["right_wheel"] / float(self.steps_per_rotation) * self.wheel_circumference * ( 1 if settings.motor_control["stepper_motors"]["right_wheel"]["backwards_orientation"] else -1)
                 average_distance = (abs(left_distance) + abs(right_distance)) / 2.0
-
                 if self.current_motion == "rotate_left": # rotate left
                     proportion_of_circle = average_distance / self.circumference_of_rotation
                     degrees = proportion_of_circle * 360.0
