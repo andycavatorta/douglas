@@ -244,7 +244,7 @@ class Paths(threading.Thread):
                     #self.stroke_paths_cursor = 0
                     for stroke_path in self.stroke_paths:
                         print stroke_path
-                        motor_control.add_to_queue(msg)
+                        motor_control.add_to_queue(stroke_path)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
