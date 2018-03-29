@@ -15,6 +15,39 @@ from thirtybirds_2_0.PiUtils.management import init as management_init
 from thirtybirds_2_0.Adaptors.Actuators import stepper_pulses
 
 
+
+
+
+
+class Paths(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.queue = Queue.Queue()
+        self.stroke_paths = []
+        #self.stroke_paths_cursor = 0
+
+    def add_to_queue(self, msg):
+        self.queue.put(msg)
+
+    def run(self):
+        while True:
+            try:
+                topic, msg = self.queue.get(True)
+                if topic == "path_server.stroke_paths_response":
+                    self.stroke_paths = msg
+                    #self.stroke_paths_cursor = 0
+                    for stroke_path in self.stroke_paths:
+                        print stroke_path
+                        time.sleep(1.0)
+
+            except Exception as e:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
+
+paths = Paths()
+paths.daemon = True
+
+
 class Network(object):
     def __init__(self, hostname):
         self.hostname = hostname
@@ -38,6 +71,8 @@ class Network(object):
             except Exception:
                 pass
         print topic, msg
+        if topic == "path_server.stroke_paths_response_{}".format(self.hostname):
+            paths.add_to_queue(["path_server.stroke_paths_response", msg])
 
     def network_status_handler(self, topic_msg):
         # this method runs in the thread of the caller, not the tread of Main
@@ -54,6 +89,7 @@ class Network(object):
 def init(hostname):
     global network
     network = Network(hostname)
+    paths.start()
     #motor_control.start()
     #spatial_translation.start()    
     #path_server.start()
@@ -69,7 +105,8 @@ def init(hostname):
     network.subscribe_to_topic("mobility_loop.lease_response")
     network.subscribe_to_topic("mobility_loop.enable_request")
     #network.subscribe_to_topic("path_server.stroke_paths_response")
-    network.subscribe_to_topic("path_server.stroke_paths_response_{}".format(hostname))
+    network.subscribe_to_topic( == "path_server.stroke_paths_response_{}".format(self.hostname)):
+
     network.subscribe_to_topic("path_server.paths_to_available_paint_response")
     network.subscribe_to_topic("location_server.location_from_lps_response")
     network.send("present", True)
