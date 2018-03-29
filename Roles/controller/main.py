@@ -32,19 +32,36 @@ class Paths():
                 {"x":0.36, "y":0.20, "brush":False  },
                 {"x":0.20, "y":0.0, "brush":True  },
                 {"x":0.0, "y":0.0, "brush":False  },
+            ],
+            "square":[
+                {"action":"brush", "value":True, "speed":1.0 },
+                {"action":"roll", "value":0.25, "speed":1.0 },
+                {"action":"rotate", "value":90, "speed":1.0 },
+
+                {"action":"brush", "value":False, "speed":1.0 },
+                {"action":"roll", "value":0.25, "speed":1.0 },
+                {"action":"rotate", "value":90, "speed":1.0 },
+
+                {"action":"brush", "value":True, "speed":1.0 },
+                {"action":"roll", "value":0.25, "speed":1.0 },
+                {"action":"rotate", "value":90, "speed":1.0 },
+
+                {"action":"brush", "value":False, "speed":1.0 },
+                {"action":"roll", "value":0.25, "speed":1.0 },
+                {"action":"rotate", "value":90, "speed":1.0 },
             ]
         }
         self.stroke_paths = {
-            "douglas00":self.stroke_paths_tests["octogon"],
-            "douglas01":self.stroke_paths_tests["octogon"],
-            "douglas02":self.stroke_paths_tests["octogon"],
-            "douglas03":self.stroke_paths_tests["octogon"],
-            "douglas04":self.stroke_paths_tests["octogon"],
-            "douglas05":self.stroke_paths_tests["octogon"],
-            "douglas06":self.stroke_paths_tests["octogon"],
-            "douglas07":self.stroke_paths_tests["octogon"],
-            "douglas08":self.stroke_paths_tests["octogon"],
-            "douglas09":self.stroke_paths_tests["octogon"],
+            "douglas00":self.stroke_paths_tests["square"],
+            "douglas01":self.stroke_paths_tests["square"],
+            "douglas02":self.stroke_paths_tests["square"],
+            "douglas03":self.stroke_paths_tests["square"],
+            "douglas04":self.stroke_paths_tests["square"],
+            "douglas05":self.stroke_paths_tests["square"],
+            "douglas06":self.stroke_paths_tests["square"],
+            "douglas07":self.stroke_paths_tests["square"],
+            "douglas08":self.stroke_paths_tests["square"],
+            "douglas09":self.stroke_paths_tests["square"],
         }
     def send_stroke_paths(self, bot_id=False):
             if bot_id:
