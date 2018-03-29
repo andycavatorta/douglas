@@ -209,13 +209,13 @@ class Motor_Control(threading.Thread):
     def run(self):
         while True:
             try:
-                msg = self.message_queue.get(True)
-                if msg["command"] == "rotate":
-                    self.rotate(msg["value"], msg["speed"])
-                if msg["command"] == "roll":
-                    self.roll(msg["value"], msg["speed"])
-                if msg["command"] == "brush":
-                    self.brush_arm(msg["value"], msg["speed"])
+                command = self.message_queue.get(True)
+                if command["action"] == "rotate":
+                    self.rotate(command["value"], command["speed"])
+                if command["action"] == "roll":
+                    self.roll(command["value"], command["speed"])
+                if command["action"] == "brush":
+                    self.brush_arm(command["value"], command["speed"])
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
