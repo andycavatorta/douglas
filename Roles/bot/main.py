@@ -558,7 +558,7 @@ class Mobility_Loop(threading.Thread):
         while True:
             try:
                 topic, msg = self.queue.get(True)
-                print topic, msg
+                print "mobility_loop.run ", topic, msg
 
                 if topic == "location_server>mobility_loop.location_response":
 
