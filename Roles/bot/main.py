@@ -242,7 +242,8 @@ class Motor_Control(threading.Thread):
                         "right_wheel":True,
                         "brush_arm":True
                     }
-                    mobility_loop.add_to_queue(["motion.destination_reached", True])
+                    if self.command_queue.empty():
+                        mobility_loop.add_to_queue(["motion.destination_reached", True])
             except Queue.Empty:
                 pass
             #except Exception as e:
@@ -565,7 +566,6 @@ class Mobility_Loop(threading.Thread):
                 print "mobility_loop.run ", topic, msg
 
                 if topic == "location_server>mobility_loop.location_response":
-
                     self.location = msg
                     path_server.add_to_queue(["mobility_loop>path_server.destination_request", self.location])
 
