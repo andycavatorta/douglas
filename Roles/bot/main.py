@@ -167,7 +167,8 @@ class Motor_Control(threading.Thread):
         stepper_pulses.set("brush_arm", "steps", number_of_pulses)
 
     def motor_callback(self, motor_name, msg_type, data):
-        
+        pass
+        """
         if msg_type == "steps_cursor":
             if self.previous_motion != self.current_motion:
                 print " self.current_motion",  self.current_motion, motor_name, data
@@ -200,42 +201,24 @@ class Motor_Control(threading.Thread):
             self.finished[motor_name] = data
             if self.finished["left_wheel"] and self.finished["right_wheel"] and self.finished["brush_arm"]:
                 self.add_to_queue(["finished", None, None])
-
+        """
     def add_to_queue(self, msg):
         #print "Motor_Control.add_to_queue", msg
         self.message_queue.put(msg)
 
     def run(self):
         while True:
-            # if all motors are finished, 
-            if self.finished["left_wheel"] and self.finished["right_wheel"] and self.finished["brush_arm"]:
-                try:
-                    command, value, speed = self.command_queue.get(False) # check the command queue
-                    if command  == "rotate":
-                        self.rotate(value, speed)
-                    if command  == "roll":
-                        self.roll(value, speed)
-                    if command  == "brush":
-                        self.brush_arm(value, speed)
-                except Queue.Empty:
-                    pass
             try:
-                # block on waiting for all motors to acknowledge completion or disable
-                command, value, speed = self.message_queue.get(False)
-                if command in ["rotate","roll","brush"]:
-                    self.command_queue.put([command, value, speed])
-                if command == "enable":
-                    stepper_pulses.set("left_wheel", "enable", value)
-                    stepper_pulses.set("right_wheel", "enable", value)
-                    stepper_pulses.set("brush_arm", "enable", value)
-                if command == "finished":
-                    mobility_loop.add_to_queue(["motion.destination_reached", True])
-            except Queue.Empty:
-                pass
-            time.sleep(0.1)
-            #except Exception as e:
-            #    exc_type, exc_value, exc_traceback = sys.exc_info()
-            #    print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
+                msg = self.message_queue.get(False)
+                if msg["command"] == "rotate":
+                    self.rotate(msg["value"], msg["speed"])
+                if msg["command"] == "roll":
+                    self.roll(msg["value"], msg["speed"])
+                if msg["command"] == "brush":
+                    self.brush_arm(msg["value"], msg["speed"])
+            except Exception as e:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
 
 motor_control = Motor_Control()
 motor_control.daemon = True
@@ -260,7 +243,7 @@ class Paths(threading.Thread):
                     #self.stroke_paths_cursor = 0
                     for stroke_path in self.stroke_paths:
                         print stroke_path
-                        time.sleep(10.0)
+                        motor_control.add_to_queue(msg)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
