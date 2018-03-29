@@ -209,7 +209,7 @@ class Motor_Control(threading.Thread):
     def run(self):
         while True:
             try:
-                msg = self.message_queue.get(False)
+                msg = self.message_queue.get(True)
                 if msg["command"] == "rotate":
                     self.rotate(msg["value"], msg["speed"])
                 if msg["command"] == "roll":
