@@ -17,107 +17,41 @@ THIRTYBIRDS_PATH = "%s/thirtybirds_2_0" % (UPPER_PATH )
 
 from thirtybirds_2_0.Network.manager import init as network_init
 
-class Location(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-        self.queue = Queue.Queue()
 
-    def add_to_queue(self, msg):
-        self.queue.put(msg)
-
-    def run(self):
-        while True:
-            try:
-                topic, msg = self.queue.get(True)
-                print topic, msg
-
-            except Exception as e:
-                exc_type, exc_value, exc_traceback = sys.exc_info()
-                print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
-
-
-
-class Leases(threading.Thread):
+class Paths():
     def __init__(self, network):
-        threading.Thread.__init__(self)
         self.network = network
         self.queue = Queue.Queue()
-
-    def add_to_queue(self, msg):
-        self.queue.put(msg)
-
-    def run(self):
-        while True:
-            try:
-                topic, msg = self.queue.get(True)
-                print topic, msg
-                if topic ==  "mobility_loop.lease_request":
-                    time.sleep(((random.random()+1)**3)-1) # to simulate waiting for lease
-                    self.network.thirtybirds.send("mobility_loop.lease_response",True)
-
-            except Exception as e:
-                exc_type, exc_value, exc_traceback = sys.exc_info()
-                print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
-
-class Paths(threading.Thread):
-    def __init__(self, network):
-        threading.Thread.__init__(self)
-        self.network = network
-        self.queue = Queue.Queue()
-        self.stroke_paths = [
-            {"x":0.25, "y":0.25, "brush":True  },
-            {"x":0.25, "y":0.0,  "brush":False },
-            {"x":0.25, "y":0.25, "brush":True  },
-            {"x":0.0,  "y":0.0,  "brush":False },
-            {"x":0.0,  "y":0.25, "brush":False }
-        ]
-
-    def add_to_queue(self, msg):
-        print "Paths.add_to_queue", msg
-        self.queue.put(msg)
-
-    def run(self):
-        while True:
-            try:
-                topic, msg = self.queue.get(True)
-                print "Paths.run", topic, msg
-                if topic == "path_server.stroke_paths_request":
-                    self.network.thirtybirds.send("path_server.stroke_paths_response",self.stroke_paths)
-
-            except Exception as e:
-                exc_type, exc_value, exc_traceback = sys.exc_info()
-                print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
-
-
-
-
-
-
-class Bots(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-        self.queue = Queue.Queue()
-        #for 
-
-
-
-    def add_to_queue(self, msg):
-        self.queue.put(msg)
-
-    def run(self):
-        while True:
-            try:
-                topic, msg = self.queue.get(True)
-                print topic, msg
-
-            except Exception as e:
-                exc_type, exc_value, exc_traceback = sys.exc_info()
-                print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
-
-bots = Bots()
-bots.daemon = True
-
-
+        self.stroke_paths_tests = {
+            "octogon":[
+                {"x":-0.16, "y":0.20, "brush":True  },
+                {"x":-0.16, "y":0.40, "brush":False  },
+                {"x":0.0, "y":0.60, "brush":True  },
+                {"x":0.20, "y":0.60, "brush":False  },
+                {"x":0.36, "y":0.40, "brush":True  },
+                {"x":0.36, "y":0.20, "brush":False  },
+                {"x":0.20, "y":0.0, "brush":True  },
+                {"x":0.0, "y":0.0, "brush":False  },
+            ]
+        }
+        self.stroke_paths = {
+            "douglas00":self.stroke_paths_tests["octogon"],
+            "douglas01":self.stroke_paths_tests["octogon"],
+            "douglas02":self.stroke_paths_tests["octogon"],
+            "douglas03":self.stroke_paths_tests["octogon"],
+            "douglas04":self.stroke_paths_tests["octogon"],
+            "douglas05":self.stroke_paths_tests["octogon"],
+            "douglas06":self.stroke_paths_tests["octogon"],
+            "douglas07":self.stroke_paths_tests["octogon"],
+            "douglas08":self.stroke_paths_tests["octogon"],
+            "douglas09":self.stroke_paths_tests["octogon"],
+        }
+        self.send_stroke_paths(bot_id=False):
+            if bot_id:
+                self.network.thirtybirds.send("path_server.stroke_paths_response_{}".format(bot_id),self.stroke_paths[bot_id])
+            else:
+                for bot_id in "douglas00":
+                    self.network.thirtybirds.send("path_server.stroke_paths_response_{}".format(bot_id),self.stroke_paths[bot_id])
 
 
 class Network(object):
@@ -133,7 +67,6 @@ class Network(object):
             message_callback=network_message_handler,
             status_callback=network_status_handler
         )
-
 
 # Main handles network send/recv and can see all other classes directly
 class Main(threading.Thread):
