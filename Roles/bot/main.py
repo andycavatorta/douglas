@@ -77,7 +77,7 @@ class Motor_Control(threading.Thread):
         stepper_pulses.set("brush_arm", "enable", True)
 
     def rotate(self, degrees, speed):
-        print "Motor_Control.rotate", degrees, speed
+        #print "Motor_Control.rotate", degrees, speed
         self.speed = float(abs(speed))
         #print "float(abs(degrees))", float(abs(degrees))
         proportion_of_circle = float(abs(degrees)) / 360.0
@@ -110,7 +110,7 @@ class Motor_Control(threading.Thread):
         stepper_pulses.set("brush_arm", "steps", 0)
 
     def roll(self, distance, speed): # distance units are in mm
-        print "Motor_Control.roll", distance, speed
+        #print "Motor_Control.roll", distance, speed
         number_of_wheel_rotations = abs(distance) / self.wheel_circumference
         number_of_pulses = number_of_wheel_rotations * self.steps_per_rotation
 
@@ -138,7 +138,7 @@ class Motor_Control(threading.Thread):
         stepper_pulses.set("brush_arm", "steps", 0)
 
     def brush_arm(self, brush_position_up, speed): # distance units are in mm
-        print "Motor_Control.brush_arm", brush_position_up, speed
+        #print "Motor_Control.brush_arm", brush_position_up, speed
         #number_of_wheel_rotations = abs(distance) / self.wheel_circumference
 
         if brush_position_up == self.brush_position_up: # if we're already in the right position
@@ -206,7 +206,7 @@ class Motor_Control(threading.Thread):
                 self.add_to_queue(["finished", None, None])
 
     def add_to_queue(self, msg):
-        print "Motor_Control.add_to_queue", msg
+        #print "Motor_Control.add_to_queue", msg
         self.message_queue.put(msg)
 
     def run(self):
@@ -226,7 +226,6 @@ class Motor_Control(threading.Thread):
             try:
                 # block on waiting for all motors to acknowledge completion or disable
                 command, value, speed = self.message_queue.get(False)
-                print "Motor_Control.run", command, value, speed
                 if command in ["rotate","roll","brush"]:
                     self.command_queue.put([command, value, speed])
                 if command == "enable":
@@ -272,12 +271,12 @@ class Spatial_Translation(threading.Thread):
         #self.location_from_odometry = None
 
     def add_to_queue(self, msg):
-        print "spatial_translation.add_to_queue", msg
+        #print "spatial_translation.add_to_queue", msg
         self.queue.put(msg)
 
     def translate_cartesian_to_vectors(self, origin, destination):
         # calculate distance
-        print "spatial_translation.translate_cartesian_to_vectors", origin, destination
+        #print "spatial_translation.translate_cartesian_to_vectors", origin, destination
         distance = math.sqrt(((origin['x'] - destination["x"])**2) + ((origin['y'] - destination["y"])**2))
         # calculate absolute heading relative to Cartesian space, not relative to bot
         if origin['x'] == destination["x"] and origin['y'] == destination["y"]: # no movement
@@ -323,12 +322,12 @@ class Spatial_Translation(threading.Thread):
         while True:
             try:
                 topic, msg = self.queue.get(True)
-                print "spatial_translation.run", topic, msg
+                #print "spatial_translation.run", topic, msg
                 if topic == "mobility_loop>spatial_translation.set_destination":
                     origin, destination = msg
                     distance, target_angle_relative_to_bot = self.translate_cartesian_to_vectors(origin, destination)
                     
-                    print "distance, target_angle_relative_to_bot", distance, target_angle_relative_to_bot
+                    #print "distance, target_angle_relative_to_bot", distance, target_angle_relative_to_bot
                     self.translate_vectors_to_motor_commands(destination["brush"], distance, target_angle_relative_to_bot)
                     continue
 
@@ -385,7 +384,7 @@ class Path_Server(threading.Thread):
             self.paths_to_available_paint_cursor += 1
             return next_path
         """
-        print "generate_destination", self.stroke_paths_cursor, self.stroke_paths
+        #print "generate_destination", self.stroke_paths_cursor, self.stroke_paths
         if self.stroke_paths_cursor < len(self.stroke_paths):
             next_path = self.stroke_paths[self.stroke_paths_cursor]
             self.stroke_paths_cursor += 1
@@ -399,7 +398,7 @@ class Path_Server(threading.Thread):
         while True:
             try:
                 topic, msg = self.queue.get(True)
-                print "path_server.add_to_queue",topic, msg
+                #print "path_server.add_to_queue",topic, msg
                 if topic == "path_server.stroke_paths_response":
                     self.stroke_paths = msg
                     self.stroke_paths_cursor = 0
@@ -559,9 +558,10 @@ class Mobility_Loop(threading.Thread):
         while True:
             try:
                 topic, msg = self.queue.get(True)
-                #print topic, msg
+                print topic, msg
 
                 if topic == "location_server>mobility_loop.location_response":
+
                     self.location = msg
                     path_server.add_to_queue(["mobility_loop>path_server.destination_request", self.location])
 
