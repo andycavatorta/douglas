@@ -35,19 +35,19 @@ class Paths():
             ],
             "square":[
                 {"action":"brush", "value":True, "speed":1.0 },
-                {"action":"roll", "value":0.25, "speed":1.0 },
+                {"action":"roll", "value":0.75, "speed":1.0 },
                 {"action":"rotate", "value":90, "speed":1.0 },
 
                 {"action":"brush", "value":False, "speed":1.0 },
-                {"action":"roll", "value":0.25, "speed":1.0 },
+                {"action":"roll", "value":0.75, "speed":1.0 },
                 {"action":"rotate", "value":90, "speed":1.0 },
 
                 {"action":"brush", "value":True, "speed":1.0 },
-                {"action":"roll", "value":0.25, "speed":1.0 },
+                {"action":"roll", "value":0.75, "speed":1.0 },
                 {"action":"rotate", "value":90, "speed":1.0 },
 
                 {"action":"brush", "value":False, "speed":1.0 },
-                {"action":"roll", "value":0.25, "speed":1.0 },
+                {"action":"roll", "value":0.75, "speed":1.0 },
                 {"action":"rotate", "value":90, "speed":1.0 },
             ]
         }
