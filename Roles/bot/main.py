@@ -167,7 +167,9 @@ class Motor_Control(threading.Thread):
         stepper_pulses.set("brush_arm", "steps", number_of_pulses)
 
     def motor_callback(self, motor_name, msg_type, data):
-        pass
+        
+        if msg_type != "steps_cursor":
+            print "motor_callback", motor_name, msg_type, data
         """
         if msg_type == "steps_cursor":
             if self.previous_motion != self.current_motion:
@@ -245,7 +247,7 @@ class Paths(threading.Thread):
                     for stroke_path in self.stroke_paths:
                         print stroke_path
                         motor_control.add_to_queue(stroke_path)
-                        time.sleep(3.0)
+                        time.sleep(4.0)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
