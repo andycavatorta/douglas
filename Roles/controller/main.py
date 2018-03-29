@@ -46,7 +46,7 @@ class Paths():
             "douglas08":self.stroke_paths_tests["octogon"],
             "douglas09":self.stroke_paths_tests["octogon"],
         }
-        self.send_stroke_paths(bot_id=False):
+    def send_stroke_paths(bot_id=False):
             if bot_id:
                 self.network.thirtybirds.send("path_server.stroke_paths_response_{}".format(bot_id),self.stroke_paths[bot_id])
             else:
@@ -76,12 +76,12 @@ class Main(threading.Thread):
         self.queue = Queue.Queue()
 
         self.paths = Paths(self.network)
-        self.paths.daemon = True
-        self.paths.start()
+        #self.paths.daemon = True
+        #self.paths.start()
 
-        self.leases = Leases(self.network)
-        self.leases.daemon = True
-        self.leases.start()
+        #self.leases = Leases(self.network)
+        #self.leases.daemon = True
+        #self.leases.start()
 
         #self.location = Location()
         #self.location.daemon = True
