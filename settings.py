@@ -33,7 +33,7 @@ bot_names = [
 server_names = [
     "douglas_controller", 
     "avl-visual", 
-    "SS-MACBOOK-PRO",
+    "Ss-MacBook-Pro.local",
 ]
 
 dashboard_names = [
