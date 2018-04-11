@@ -173,40 +173,7 @@ class Motor_Control(threading.Thread):
 
         if msg_type == "finished":
             self.finished[motor_name] = True
-        """
-        if msg_type == "steps_cursor":
-            if self.previous_motion != self.current_motion:
-                print " self.current_motion",  self.current_motion, motor_name, data
-                self.previous_motion = self.current_motion
-            if motor_name in ["left_wheel", "right_wheel"]:
-                self.pulse_odometer[motor_name] = data # collect pulse odometer for each motor
-                left_distance  = self.pulse_odometer["left_wheel"]  / float(self.steps_per_rotation) * self.wheel_circumference * ( 1 if settings.motor_control["stepper_motors"]["left_wheel"]["backwards_orientation"] else -1)
-                right_distance = self.pulse_odometer["right_wheel"] / float(self.steps_per_rotation) * self.wheel_circumference * ( 1 if settings.motor_control["stepper_motors"]["right_wheel"]["backwards_orientation"] else -1)
-                average_distance = (abs(left_distance) + abs(right_distance)) / 2.0
-                if self.current_motion == "rotate_left": # rotate left
-                    proportion_of_circle = average_distance / self.circumference_of_rotation
-                    degrees = proportion_of_circle * 360.0
-                    #print "motor_callback", motor_name, msg_type, data, degrees
-                    location_server.add_to_queue(["motor_control>location_server.relative_odometry", ["rotate", degrees]])
-                    return
-                if self.current_motion == "rotate_right": # rotate right
-                    proportion_of_circle = average_distance / self.circumference_of_rotation
-                    degrees = proportion_of_circle * 360.0
-                    location_server.add_to_queue(["motor_control>location_server.relative_odometry", ["rotate", -degrees]])
-                    return
-                if self.current_motion == "roll_forward": # roll forward
-                    location_server.add_to_queue(["motor_control>location_server.relative_odometry", ["roll", average_distance]])
-                    return
-                if self.current_motion == "roll_backward": # roll backward
-                    location_server.add_to_queue(["motor_control>location_server.relative_odometry", ["roll", -average_distance]])
-                    return
-
-        if msg_type == "finished":
-            #print "motor_callback", motor_name, msg_type, data
-            self.finished[motor_name] = data
-            if self.finished["left_wheel"] and self.finished["right_wheel"] and self.finished["brush_arm"]:
-                self.add_to_queue(["finished", None, None])
-        """
+            
     def add_to_queue(self, msg):
         #print "Motor_Control.add_to_queue", msg
         self.message_queue.put(msg)
