@@ -235,7 +235,6 @@ class Paths(threading.Thread):
                 if topic == "timed_events.request_strokes_if_empty":
                     if len(self.stroke_paths) == 0:
                         self.network.thirtybirds.send("path_server.next_stroke_request", self.hostname)
-                             path_server.next_stroke_response_douglas06
                 if topic == "path_server.next_stroke_response_{}".format(self.hostname):
                     self.self.stroke_paths = msg
 
