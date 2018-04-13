@@ -265,6 +265,8 @@ class Main(threading.Thread):
         self.paths = Paths(hostname, self.network)
 
     def network_message_handler(self, topic_msg):
+        print "main.add_to_queue", topic, msg
+        self.queue.put((topic, msg))
 
     def network_status_handler(self, topic_msg):
         # this method runs in the thread of the caller, not the tread of Main
