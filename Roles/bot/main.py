@@ -206,13 +206,14 @@ class Motor_Control(threading.Thread):
 #motor_control.daemon = True
 
 class Timed_Events(threading.Thread):
-    def __init__(self, hostname, network):
+    def __init__(self, hostname, paths):
         threading.Thread.__init__(self)
+        self.paths = paths
 
     def run(self):
         while True:
             time.sleep(5)
-            main.paths.add_to_queue(("timed_events.request_strokes_if_empty",False))
+            self.paths.add_to_queue(("timed_events.request_strokes_if_empty",False))
 
 
 class Paths(threading.Thread):
@@ -289,7 +290,7 @@ class Main(threading.Thread):
         self.paths.daemon = True
         self.paths.start()
 
-        self.timed_events = Timed_Events(hostname, self.network)
+        self.timed_events = Timed_Events(hostname, self.paths)
         self.timed_events.daemon = True
         self.timed_events.start()
         
