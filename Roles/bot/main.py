@@ -211,7 +211,7 @@ class Paths():
         self.queue = Queue.Queue()
         self.network = network
         self.stroke_paths = []
-        self.network.send("path_server.next_stroke_request", hostname)
+        self.network.thirtybirds.send("path_server.next_stroke_request", hostname)
 
 
     # avoid threading here and simply store stroke_paths in a queue?
@@ -235,6 +235,19 @@ class Paths():
                 print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
 
 
+class Network(object):
+    def __init__(self, hostname, network_message_handler, network_status_handler):
+        self.hostname = hostname
+        self.thirtybirds = network_init(
+            hostname=self.hostname,
+            role="client",
+            discovery_multicastGroup=settings.discovery_multicastGroup,
+            discovery_multicastPort=settings.discovery_multicastPort,
+            discovery_responsePort=settings.discovery_responsePort,
+            pubsub_pubPort=settings.pubsub_pubPort,
+            message_callback=network_message_handler,
+            status_callback=network_status_handler
+        )
 
 
 class Main(threading.Thread):
@@ -242,27 +255,28 @@ class Main(threading.Thread):
         threading.Thread.__init__(self)
         self.queue = Queue.Queue()
         self.hostname = hostname
-        self.network = network_init(
-            hostname=self.hostname,
-            role="client",
-            discovery_multicastGroup=settings.discovery_multicastGroup,
-            discovery_multicastPort=settings.discovery_multicastPort,
-            discovery_responsePort=settings.discovery_responsePort,
-            pubsub_pubPort=settings.pubsub_pubPort,
-            message_callback=self.network_message_handler,
-            status_callback=self.network_status_handler
-        )
-        self.network.subscribe_to_topic("management.system_status_request")
-        self.network.subscribe_to_topic("management.system_reboot_request")
-        self.network.subscribe_to_topic("management.system_shutdown_request")
-        self.network.subscribe_to_topic("management.git_pull_request")
-        self.network.subscribe_to_topic("management.scripts_update_request")
-        self.network.subscribe_to_topic("mobility_loop.lease_response")
-        self.network.subscribe_to_topic("mobility_loop.enable_request")
-        self.network.subscribe_to_topic("path_server.next_stroke_response_{}".format(hostname))
-        self.network.subscribe_to_topic("path_server.paths_to_available_paint_response")
-        self.network.subscribe_to_topic("location_server.location_from_lps_response")
-        self.network.send("present", True)
+        self.network = Network(hostname, self.network_message_handler, self.network_status_handler)
+        #self.network = network_init(
+        #    hostname=self.hostname,
+        #    role="client",
+        #    discovery_multicastGroup=settings.discovery_multicastGroup,
+        #    discovery_multicastPort=settings.discovery_multicastPort,
+        #    discovery_responsePort=settings.discovery_responsePort,
+        #    pubsub_pubPort=settings.pubsub_pubPort,
+        #    message_callback=self.network_message_handler,
+        #    status_callback=self.network_status_handler
+        #)
+        self.network.thirtybirds.subscribe_to_topic("management.system_status_request")
+        self.network.thirtybirds.subscribe_to_topic("management.system_reboot_request")
+        self.network.thirtybirds.subscribe_to_topic("management.system_shutdown_request")
+        self.network.thirtybirds.subscribe_to_topic("management.git_pull_request")
+        self.network.thirtybirds.subscribe_to_topic("management.scripts_update_request")
+        self.network.thirtybirds.subscribe_to_topic("mobility_loop.lease_response")
+        self.network.thirtybirds.subscribe_to_topic("mobility_loop.enable_request")
+        self.network.thirtybirds.subscribe_to_topic("path_server.next_stroke_response_{}".format(hostname))
+        self.network.thirtybirds.subscribe_to_topic("path_server.paths_to_available_paint_response")
+        self.network.thirtybirds.subscribe_to_topic("location_server.location_from_lps_response")
+        self.network.thirtybirds.send("present", True)
         self.paths = Paths(hostname, self.network)
 
     def network_message_handler(self, topic_msg):
