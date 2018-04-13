@@ -235,7 +235,7 @@ class Paths(threading.Thread):
                 if topic == "timed_events.request_strokes_if_empty":
                     if len(self.stroke_paths) == 0:
                         self.network.thirtybirds.send("path_server.next_stroke_request", self.hostname)
-        
+                             path_server.next_stroke_response_douglas06
                 if topic == "path_server.next_stroke_response_{}".format(self.hostname):
                     self.self.stroke_paths = msg
 
@@ -317,7 +317,8 @@ class Main(threading.Thread):
         while True:
             try:
                 topic, msg = self.queue.get(True)
-
+                if topic == "path_server.next_stroke_response_{}".format(self.hostname):
+                    self.paths.add_to_queue((topic,msg))
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
