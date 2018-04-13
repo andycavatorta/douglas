@@ -291,9 +291,14 @@ class Main(threading.Thread):
 
 
 def init(hostname):
-    global network
-    network = Network(hostname)
-    paths.start()
+    main = Main(hostname)
+    main.daemon = True
+    main.start()
+    return main
+
+    #global network
+    #network = Network(hostname)
+    #paths.start()
     #motor_control.start()
     #spatial_translation.start()    
     #path_server.start()
