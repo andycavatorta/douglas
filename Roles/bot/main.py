@@ -69,15 +69,10 @@ class Motor_Control(threading.Thread):
         stepper_pulses.set("brush_arm", "enable", True)
 
     def rotate(self, degrees, speed):
-        #print "Motor_Control.rotate", degrees, speed
         self.speed = float(abs(speed))
-        #print "float(abs(degrees))", float(abs(degrees))
         proportion_of_circle = float(abs(degrees)) / 360.0
-        #print "proportion_of_circle", proportion_of_circle
         length_of_arc = proportion_of_circle * self.circumference_of_rotation
-        #print "length_of_arc", length_of_arc
         pulses_of_arc = length_of_arc * self.steps_per_rotation
-        #print "pulses_of_arc", pulses_of_arc
         left_steps, right_steps = (pulses_of_arc, -pulses_of_arc) if degrees > 0 else (-pulses_of_arc, pulses_of_arc)
 
         self.current_motion = "rotate_right" if degrees > 0 else "rotate_left"
@@ -205,6 +200,49 @@ class Motor_Control(threading.Thread):
 #motor_control = Motor_Control()
 #motor_control.daemon = True
 
+class Spatial_Translation(threading.Thread):
+    def __init__(self, main, network):
+        threading.Thread.__init__(self)
+        self.cartisian_position = {"x":0.0, "y":0.0, "orientation":0.0}
+
+    def set_cartisian_position(self, x, y, orientation):
+        self.cartisian_position = {"x":x, "y":y, "orientation":orientation}
+
+    def convert_cartesian_position_and_destination_to_tangents(self, destination):
+        origin = self.cartisian_position # for convenience
+        #print "spatial_translation.translate_cartesian_to_vectors", origin, destination
+        distance = math.sqrt(((origin['x'] - destination["x"])**2) + ((origin['y'] - destination["y"])**2))
+        # calculate absolute heading relative to Cartesian space, not relative to bot
+        if origin['x'] == destination["x"] and origin['y'] == destination["y"]: # no movement
+            return (0.0, 0.0)
+        elif origin['x'] < destination["x"] and origin['y'] == destination["y"]: # x-axis positive
+            return (distance, 0.0)
+        elif origin['x'] > destination["x"] and origin['y'] == destination["y"]: # x-axis negative
+            return (distance, 180.0)
+        elif origin['x'] == destination["x"] and origin['y'] < destination["y"]: # y-axis positive
+            return (distance, 90.0)
+        elif origin['x'] == destination["x"] and origin['y'] > destination["y"]: # y-axis negative
+            return (distance, -90.0)
+        elif origin['x'] < destination["x"] and origin['y'] < destination["y"]: # somewhere in quadrant 1
+            target_angle_relative_to_Cartesian_space =  math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
+            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin['orientation']
+            return (distance, target_angle_relative_to_bot)
+        elif origin['x'] > destination["x"] and origin['y'] < destination["y"]: # somewhere in quadrant 2
+            target_angle_relative_to_Cartesian_space =  90 + math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
+            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin['orientation']
+            return (distance, target_angle_relative_to_bot)
+        elif origin['x'] > destination["x"] and origin['y'] > destination["y"]: # somewhere in quadrant 3
+            target_angle_relative_to_Cartesian_space =  180 + math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
+            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin['orientation']
+            return (distance, target_angle_relative_to_bot)
+        elif origin['x'] < destination["x"] and origin['y'] > destination["y"]: # somewhere in quadrant 4
+            target_angle_relative_to_Cartesian_space =  270 + math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
+            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin['orientation']
+            return (distance, target_angle_relative_to_bot)
+        else :
+            print "Coordinates_To_Vectors.calculate_vectors_from_target_coordinates cannot assign quadrant", origin['x'], destination["x"], origin['y'], destination["y"]
+
+
 class Timed_Events(threading.Thread):
     def __init__(self, hostname, paths):
         threading.Thread.__init__(self)
@@ -214,14 +252,15 @@ class Timed_Events(threading.Thread):
         while True:
             time.sleep(5)
             self.paths.add_to_queue(("timed_events.request_strokes_if_empty",False))
-
+            self.paths.add_to_queue(("motor_control.request_next_command",False))
 
 class Paths(threading.Thread):
-    def __init__(self, hostname, network):
+    def __init__(self, hostname, network, spatial_translation):
         threading.Thread.__init__(self)
         self.hostname = hostname
         self.queue = Queue.Queue()
         self.network = network
+        self.spatial_translation = spatial_translation
         self.stroke_paths = []
 
     # avoid threading here and simply store stroke_paths in a queue?
@@ -237,6 +276,9 @@ class Paths(threading.Thread):
                         self.network.thirtybirds.send("path_server.next_stroke_request", self.hostname)
                 if topic == "path_server.next_stroke_response_{}".format(self.hostname):
                     self.stroke_paths = msg
+                if topic == "motor_control.request_next_command":
+                    stroke_path = self.stroke_paths.pop(0)
+                    print "stroke_path", stroke_path
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -285,13 +327,19 @@ class Main(threading.Thread):
         self.network.thirtybirds.subscribe_to_topic("path_server.paths_to_available_paint_response")
         self.network.thirtybirds.subscribe_to_topic("location_server.location_from_lps_response")
         self.network.thirtybirds.send("present", True)
-        self.paths = Paths(hostname, self.network)
+
+        self.spatial_translation = Spatial_Translation()
+        self.spatial_translation.daemon = True
+        self.spatial_translation.start()
+
+        self.paths = Paths(hostname, self.network, self.spatial_translation)
         self.paths.daemon = True
         self.paths.start()
 
         self.timed_events = Timed_Events(hostname, self.paths)
         self.timed_events.daemon = True
         self.timed_events.start()
+        
         
 
     def network_message_handler(self, topic_msg):
