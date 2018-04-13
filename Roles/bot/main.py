@@ -201,7 +201,7 @@ class Motor_Control(threading.Thread):
 #motor_control.daemon = True
 
 class Spatial_Translation(threading.Thread):
-    def __init__(self, main, network):
+    def __init__(self):
         threading.Thread.__init__(self)
         self.cartisian_position = {"x":0.0, "y":0.0, "orientation":0.0}
 
