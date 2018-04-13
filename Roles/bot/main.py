@@ -241,6 +241,7 @@ class Main(threading.Thread):
     def __init__(self, hostname):
         threading.Thread.__init__(self)
         self.queue = Queue.Queue()
+        self.hostname = hostname
         self.network = network_init(
             hostname=self.hostname,
             role="client",
