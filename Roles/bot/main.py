@@ -212,7 +212,7 @@ class Timed_Events(threading.Thread):
     def run(self):
         while True:
             time.sleep(5)
-                paths.add_to_queue(("timed_events.request_strokes_if_empty",False))
+            paths.add_to_queue(("timed_events.request_strokes_if_empty",False))
 
 
 class Paths(threading.Thread):
