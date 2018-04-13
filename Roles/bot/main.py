@@ -208,11 +208,13 @@ class Motor_Control(threading.Thread):
 
 class Paths():
     def __init__(self, hostname, network):
+        print "Paths init 1"
         self.queue = Queue.Queue()
         self.network = network
         self.stroke_paths = []
+        print "Paths init 2"
         self.network.thirtybirds.send("path_server.next_stroke_request", hostname)
-
+        print "Paths init 3"
 
     # avoid threading here and simply store stroke_paths in a queue?
     def add_to_queue(self, msg):
@@ -266,6 +268,7 @@ class Main(threading.Thread):
         #    message_callback=self.network_message_handler,
         #    status_callback=self.network_status_handler
         #)
+        print "Main init 1"
         self.network.thirtybirds.subscribe_to_topic("management.system_status_request")
         self.network.thirtybirds.subscribe_to_topic("management.system_reboot_request")
         self.network.thirtybirds.subscribe_to_topic("management.system_shutdown_request")
@@ -277,7 +280,9 @@ class Main(threading.Thread):
         self.network.thirtybirds.subscribe_to_topic("path_server.paths_to_available_paint_response")
         self.network.thirtybirds.subscribe_to_topic("location_server.location_from_lps_response")
         self.network.thirtybirds.send("present", True)
+        print "Main init 2"
         self.paths = Paths(hostname, self.network)
+        print "Main init 3"
 
     def network_message_handler(self, topic_msg):
         print "main.add_to_queue", topic, msg
