@@ -13,6 +13,21 @@ bot_names = [
     "douglas03",
     "douglas04",
     "douglas05",
+    "douglas06",
+    "douglas07",
+    "douglas08",
+    "douglas09",
+    "douglas10",
+    "douglas11",
+    "douglas12",
+    "douglas13",
+    "douglas14",
+    "douglas15",
+    "douglas16",
+    "douglas17",
+    "douglas18",
+    "douglas19",
+    "douglas20",
 ]
 
 server_names = [
