@@ -46,12 +46,14 @@ class Paths(threading.Thread):
             self.douglas_strokes.append(douglas_stroke)
 
     def add_to_queue(self, msg):
+        print "Paths.add_to_queue", msg
         self.queue.put(msg)
 
     def run(self):
         while True:
             try:
                 topic, msg = self.queue.get(True)
+                print "Paths.run", topic, msg
                 if topic == "path_server.next_stroke_request":
                     bot_id = msg
                     self.network.thirtybirds.send("path_server.next_stroke_response_{}".format(bot_id),self.douglas_strokes.pop(0))
@@ -137,7 +139,7 @@ class Main(threading.Thread):
                 if topic == "mobility_loop.enable_request":
                     pass
                 if topic == "path_server.next_stroke_request":
-                    self.paths.add_to_queue(["path_server.next_stroke_request", False])
+                    self.paths.add_to_queue(["path_server.next_stroke_request", msg])
                 if topic == "path_server.paths_response":
                     pass
                 if topic == "path_server.path_to_available_paint_response":
