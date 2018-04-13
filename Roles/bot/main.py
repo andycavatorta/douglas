@@ -236,7 +236,7 @@ class Paths(threading.Thread):
                     if len(self.stroke_paths) == 0:
                         self.network.thirtybirds.send("path_server.next_stroke_request", self.hostname)
                 if topic == "path_server.next_stroke_response_{}".format(self.hostname):
-                    self.self.stroke_paths = msg
+                    self.stroke_paths = msg
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
