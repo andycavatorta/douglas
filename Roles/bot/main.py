@@ -211,7 +211,7 @@ class Paths():
         self.queue = Queue.Queue()
         self.network = network
         self.stroke_paths = []
-        self.network.send("path_server.next_stroke_response_{}".format(hostname))
+        self.network.send("path_server.next_stroke_request", hostname)
 
 
     # avoid threading here and simply store stroke_paths in a queue?
