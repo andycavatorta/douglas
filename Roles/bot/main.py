@@ -205,16 +205,23 @@ class Motor_Control(threading.Thread):
 #motor_control = Motor_Control()
 #motor_control.daemon = True
 
-
-class Paths():
+class Timed_Events(threading.Thread):
     def __init__(self, hostname, network):
-        print "Paths init 1"
+        threading.Thread.__init__(self)
+
+    def run(self):
+        while True:
+            time.sleep(5)
+                paths.add_to_queue(("timed_events.request_strokes_if_empty",False))
+
+
+class Paths(threading.Thread):
+    def __init__(self, hostname, network):
+        threading.Thread.__init__(self)
+        self.hostname = hostname
         self.queue = Queue.Queue()
         self.network = network
         self.stroke_paths = []
-        print "Paths init 2"
-        self.network.thirtybirds.send("path_server.next_stroke_request", hostname)
-        print "Paths init 3"
 
     # avoid threading here and simply store stroke_paths in a queue?
     def add_to_queue(self, msg):
@@ -224,13 +231,12 @@ class Paths():
         while True:
             try:
                 topic, msg = self.queue.get(True)
-                if topic == "path_server.stroke_paths_response":
-                    self.stroke_paths = msg
-                    #self.stroke_paths_cursor = 0
-                    for stroke_path in self.stroke_paths:
-                        print stroke_path
-                        motor_control.add_to_queue(stroke_path)
-                        #time.sleep(4.0)
+                if topic == "timed_events.request_strokes_if_empty":
+                    if len(self.stroke_paths) == 0:
+                        self.network.thirtybirds.send("path_server.next_stroke_request", hostname)
+        
+                if topic == "path_server.next_stroke_response_{}".format(self.hostname):
+                    self.self.stroke_paths = msg
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -268,7 +274,6 @@ class Main(threading.Thread):
         #    message_callback=self.network_message_handler,
         #    status_callback=self.network_status_handler
         #)
-        print "Main init 1"
         self.network.thirtybirds.subscribe_to_topic("management.system_status_request")
         self.network.thirtybirds.subscribe_to_topic("management.system_reboot_request")
         self.network.thirtybirds.subscribe_to_topic("management.system_shutdown_request")
@@ -280,9 +285,14 @@ class Main(threading.Thread):
         self.network.thirtybirds.subscribe_to_topic("path_server.paths_to_available_paint_response")
         self.network.thirtybirds.subscribe_to_topic("location_server.location_from_lps_response")
         self.network.thirtybirds.send("present", True)
-        print "Main init 2"
         self.paths = Paths(hostname, self.network)
-        print "Main init 3"
+        self.paths.daemon = True
+        self.paths.start()
+
+        self.timed_events = Timed_Events(hostname, self.network)
+        self.timed_events.daemon = True
+        self.timed_events.start()
+        
 
     def network_message_handler(self, topic_msg):
         topic, msg =  topic_msg # separating just to eval msg.  best to do it early.  it should be done in TB.
