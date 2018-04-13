@@ -8,26 +8,11 @@ pubsub_pubPort = 10012
 pubsub_pubPort2 = 10014
 
 bot_names = [
-    "douglas00",
     "douglas01",
     "douglas02",
     "douglas03",
     "douglas04",
     "douglas05",
-    "douglas06",
-    "douglas07",
-    "douglas08",
-    "douglas09",
-    "douglas10",
-    "douglas11",
-    "douglas12",
-    "douglas13",
-    "douglas14",
-    "douglas15",
-    "douglas16",
-    "douglas17",
-    "douglas18",
-    "douglas19",
 ]
 
 server_names = [
