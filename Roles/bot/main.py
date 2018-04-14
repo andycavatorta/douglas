@@ -170,7 +170,7 @@ class Motor_Control(threading.Thread):
             self.finished[motor_name] = True
             
     def add_to_queue(self, msg):
-        #print "Motor_Control.add_to_queue", msg
+        print "Motor_Control.add_to_queue", msg
         self.message_queue.put(msg)
 
     def run(self):
