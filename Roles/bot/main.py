@@ -259,9 +259,9 @@ class Timed_Events(threading.Thread):
 
     def run(self):
         while True:
-            time.sleep(20)
+            time.sleep(5)
             self.paths.add_to_queue(("timed_events.request_strokes_if_empty",False))
-            self.paths.add_to_queue(("motor_control.request_next_command",False))
+            #self.paths.add_to_queue(("motor_control.request_next_command",False))
 
 class Paths(threading.Thread):
     def __init__(self, hostname, network, spatial_translation, motor_control):
