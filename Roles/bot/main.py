@@ -170,7 +170,7 @@ class Motor_Control(threading.Thread):
             self.finished[motor_name] = True
             
     def add_to_queue(self, msg):
-        #print "Motor_Control.add_to_queue", msg
+        print "Motor_Control.add_to_queue", msg
         self.message_queue.put(msg)
 
     def run(self):
@@ -208,6 +208,13 @@ class Spatial_Translation(threading.Thread):
 
     def set_cartisian_position(self, x, y, orientation):
         self.cartisian_position = {"x":x, "y":y, "orientation":orientation}
+
+    #def set_cartesian_position_to_destination(self): # call this when motor_control confirms motion is finished
+
+    def convert_vectors_to_motor_commands(self, distance, angle, brush_position_up):
+        motor_control.add_to_queue({"action":"brush", "value":brush_position_upTrue, "speed":0.2 })
+        motor_control.add_to_queue({"action":"rotate", "value":angle, "speed":0.2 })
+        motor_control.add_to_queue({"action":"roll", "value":distance, "speed":0.2})
 
     def convert_cartesian_position_and_destination_to_tangents(self, destination):
         self.cartesian_destination = destination
@@ -278,6 +285,11 @@ class Paths(threading.Thread):
                 if topic == "motor_control.request_next_command":
                     stroke_path = self.stroke_paths.pop(0)
                     vectors = self.spatial_translation.convert_cartesian_position_and_destination_to_tangents(stroke_path)
+
+                    {"action":"roll", "value":0.6, "speed":0.3 },
+                    {"action":"rotate", "value":10, "speed":0.3 },
+                    {"action":"brush", "value":True, "speed":0.2 },
+                    {"action":"brush", "value":False, "speed":0.2 },
                     print "stroke_path", stroke_path
                     print vectors
 
