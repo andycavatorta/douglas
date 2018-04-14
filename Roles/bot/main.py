@@ -215,7 +215,7 @@ class Spatial_Translation(threading.Thread):
         return [        
             {"action":"roll", "value":distance, "speed":0.2},
             {"action":"rotate", "value":angle, "speed":0.2 },
-            {"action":"brush", "value":brush_position_upTrue, "speed":0.2 }
+            {"action":"brush", "value":brush_position_up, "speed":0.2 }
         ]
         
 
