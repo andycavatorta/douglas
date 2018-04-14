@@ -243,7 +243,7 @@ class Spatial_Translation(threading.Thread):
         elif origin['x'] > destination["x"] and origin['y'] > destination["y"]: # somewhere in quadrant 3
             target_angle_relative_to_Cartesian_space =  180 + math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
         elif origin['x'] < destination["x"] and origin['y'] > destination["y"]: # somewhere in quadrant 4
-            target_angle_relative_to_Cartesian_space =  270 + math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
+            target_angle_relative_to_Cartesian_space =  -90 + math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
         else : # we should never end up here
             print "Coordinates_To_Vectors.calculate_vectors_from_target_coordinates cannot assign quadrant", origin['x'], destination["x"], origin['y'], destination["y"]
             distance = 0.0
