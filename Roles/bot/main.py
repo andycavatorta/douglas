@@ -129,6 +129,11 @@ class Motor_Control(threading.Thread):
         #number_of_wheel_rotations = abs(distance) / self.wheel_circumference
 
         if brush_position_up == self.brush_position_up: # if we're already in the right position
+            self.finished = {
+                "left_wheel":True,
+                "right_wheel":True,
+                "brush_arm":True
+            }
             return 
 
         self.brush_position_up = brush_position_up
