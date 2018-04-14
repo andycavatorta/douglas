@@ -170,7 +170,7 @@ class Motor_Control(threading.Thread):
             self.finished[motor_name] = True
             
     def add_to_queue(self, msg):
-        print "Motor_Control.add_to_queue", msg
+        #print "Motor_Control.add_to_queue", msg
         self.message_queue.put(msg)
 
     def run(self):
@@ -212,9 +212,12 @@ class Spatial_Translation(threading.Thread):
     #def set_cartesian_position_to_destination(self): # call this when motor_control confirms motion is finished
 
     def convert_vectors_to_motor_commands(self, distance, angle, brush_position_up):
-        motor_control.add_to_queue({"action":"brush", "value":brush_position_upTrue, "speed":0.2 })
-        motor_control.add_to_queue({"action":"rotate", "value":angle, "speed":0.2 })
-        motor_control.add_to_queue({"action":"roll", "value":distance, "speed":0.2})
+        return [        
+            {"action":"roll", "value":distance, "speed":0.2},
+            {"action":"rotate", "value":angle, "speed":0.2 },
+            {"action":"brush", "value":brush_position_upTrue, "speed":0.2 }
+        ]
+        
 
     def convert_cartesian_position_and_destination_to_tangents(self, destination):
         self.cartesian_destination = destination
@@ -261,12 +264,13 @@ class Timed_Events(threading.Thread):
             self.paths.add_to_queue(("motor_control.request_next_command",False))
 
 class Paths(threading.Thread):
-    def __init__(self, hostname, network, spatial_translation):
+    def __init__(self, hostname, network, spatial_translation, motor_control):
         threading.Thread.__init__(self)
         self.hostname = hostname
         self.queue = Queue.Queue()
         self.network = network
         self.spatial_translation = spatial_translation
+        self.motor_control = motor_control
         self.stroke_paths = []
 
     # avoid threading here and simply store stroke_paths in a queue?
@@ -284,14 +288,13 @@ class Paths(threading.Thread):
                     self.stroke_paths = msg
                 if topic == "motor_control.request_next_command":
                     stroke_path = self.stroke_paths.pop(0)
-                    vectors = self.spatial_translation.convert_cartesian_position_and_destination_to_tangents(stroke_path)
-
-                    {"action":"roll", "value":0.6, "speed":0.3 },
-                    {"action":"rotate", "value":10, "speed":0.3 },
-                    {"action":"brush", "value":True, "speed":0.2 },
-                    {"action":"brush", "value":False, "speed":0.2 },
                     print "stroke_path", stroke_path
-                    print vectors
+                    vectors = self.spatial_translation.convert_cartesian_position_and_destination_to_tangents(stroke_path)
+                    print "vectors", vectors
+                    motor_commands = self.spatial_translation.convert_vectors_to_motor_commands(vectors[0], vectors[1], stroke_path['brush_up'])
+                    for motor_command in motor_commands:
+                        print "motor_command", motor_command
+                        self.motor_control.add_to_queue(motor_command)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -345,7 +348,11 @@ class Main(threading.Thread):
         self.spatial_translation.daemon = True
         self.spatial_translation.start()
 
-        self.paths = Paths(hostname, self.network, self.spatial_translation)
+        self.motor_control = Motor_Control()
+        self.motor_control.daemon = True
+        self.motor_control.start()
+
+        self.paths = Paths(hostname, self.network, self.spatial_translation, self.motor_control)
         self.paths.daemon = True
         self.paths.start()
 
