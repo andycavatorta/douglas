@@ -162,7 +162,8 @@ class Motor_Control(threading.Thread):
         stepper_pulses.set("brush_arm", "steps", number_of_pulses)
 
     def motor_callback(self, motor_name, msg_type, data):
-        
+        print "motor_callback +++ ", motor_name, msg_type, data
+
         if msg_type != "steps_cursor":
             print "motor_callback", motor_name, msg_type, data
 
@@ -261,7 +262,7 @@ class Timed_Events(threading.Thread):
         while True:
             time.sleep(20)
             self.paths.add_to_queue(("timed_events.request_strokes_if_empty",False))
-            self.paths.add_to_queue(("motor_control.request_next_command",False))
+            #self.paths.add_to_queue(("motor_control.request_next_command",False))
 
 class Paths(threading.Thread):
     def __init__(self, hostname, network, spatial_translation, motor_control):
