@@ -209,6 +209,9 @@ class Spatial_Translation(threading.Thread):
     def set_cartisian_position(self, x, y, orientation):
         self.cartisian_position = {"x":x, "y":y, "orientation":orientation}
 
+    def set_cartesian_position_to_destination(self): # call this when motor_control confirms motion is finished
+
+
     def convert_cartesian_position_and_destination_to_tangents(self, destination):
         self.cartesian_destination = destination
         origin = dict(self.cartisian_position) # for convenience
@@ -216,34 +219,31 @@ class Spatial_Translation(threading.Thread):
         distance = math.sqrt(((origin['x'] - destination["x"])**2) + ((origin['y'] - destination["y"])**2))
         # calculate absolute heading relative to Cartesian space, not relative to bot
         if origin['x'] == destination["x"] and origin['y'] == destination["y"]: # no movement
-            return (0.0, 0.0)
+            target_angle_relative_to_Cartesian_space = origin["orientation"]
         elif origin['x'] < destination["x"] and origin['y'] == destination["y"]: # x-axis positive
-            return (distance, 0.0)
+            target_angle_relative_to_Cartesian_space = 0.0
         elif origin['x'] > destination["x"] and origin['y'] == destination["y"]: # x-axis negative
-            return (distance, 180.0)
+            target_angle_relative_to_Cartesian_space = 180.0
         elif origin['x'] == destination["x"] and origin['y'] < destination["y"]: # y-axis positive
-            return (distance, 90.0)
+            target_angle_relative_to_Cartesian_space = 90.0
         elif origin['x'] == destination["x"] and origin['y'] > destination["y"]: # y-axis negative
-            return (distance, -90.0)
+            target_angle_relative_to_Cartesian_space = -90.0
         elif origin['x'] < destination["x"] and origin['y'] < destination["y"]: # somewhere in quadrant 1
             target_angle_relative_to_Cartesian_space =  math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
-            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin['orientation']
-            return (distance, target_angle_relative_to_bot)
         elif origin['x'] > destination["x"] and origin['y'] < destination["y"]: # somewhere in quadrant 2
             target_angle_relative_to_Cartesian_space =  90 + math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
-            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin['orientation']
-            return (distance, target_angle_relative_to_bot)
         elif origin['x'] > destination["x"] and origin['y'] > destination["y"]: # somewhere in quadrant 3
             target_angle_relative_to_Cartesian_space =  180 + math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
-            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin['orientation']
-            return (distance, target_angle_relative_to_bot)
         elif origin['x'] < destination["x"] and origin['y'] > destination["y"]: # somewhere in quadrant 4
             target_angle_relative_to_Cartesian_space =  270 + math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
-            target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin['orientation']
-            return (distance, target_angle_relative_to_bot)
-        else :
+        else : # we should never end up here
             print "Coordinates_To_Vectors.calculate_vectors_from_target_coordinates cannot assign quadrant", origin['x'], destination["x"], origin['y'], destination["y"]
-
+            distance = 0.0
+            target_angle_relative_to_Cartesian_space = origin["orientation"]
+            target_angle_relative_to_bot = 0.0
+        target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin['orientation']        
+        self.cartisian_position = {"x":destination["x"], "y":destination["y"], "orientation":target_angle_relative_to_Cartesian_space}
+        return (distance, target_angle_relative_to_bot)
 
 class Timed_Events(threading.Thread):
     def __init__(self, hostname, paths):
