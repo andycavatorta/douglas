@@ -218,9 +218,9 @@ class Spatial_Translation(threading.Thread):
     #def set_cartesian_position_to_destination(self): # call this when motor_control confirms motion is finished
 
     def convert_vectors_to_motor_commands(self, distance, angle, brush_position_up):
-        return [        
-            {"action":"roll", "value":distance, "speed":0.5},
+        return [
             {"action":"rotate", "value":angle, "speed":0.5},
+            {"action":"roll", "value":distance, "speed":0.5},
             {"action":"brush", "value":brush_position_up, "speed":0.5}
         ]
         
