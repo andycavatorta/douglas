@@ -12,7 +12,7 @@ import sys
 from thirtybirds_2_0.Network.manager import init as network_init
 from thirtybirds_2_0.Updates.manager import init as updates_init
 from thirtybirds_2_0.PiUtils.management import init as management_init
-#from thirtybirds_2_0.Adaptors.Actuators import stepper_pulses
+from thirtybirds_2_0.Adaptors.Actuators import stepper_pulses
 
 
 class Motor_Control(threading.Thread):
