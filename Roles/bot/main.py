@@ -259,7 +259,7 @@ class Timed_Events(threading.Thread):
 
     def run(self):
         while True:
-            time.sleep(60)
+            time.sleep(20)
             self.paths.add_to_queue(("timed_events.request_strokes_if_empty",False))
             self.paths.add_to_queue(("motor_control.request_next_command",False))
 
@@ -287,14 +287,15 @@ class Paths(threading.Thread):
                 if topic == "path_server.next_stroke_response_{}".format(self.hostname):
                     self.stroke_paths = msg
                 if topic == "motor_control.request_next_command":
-                    stroke_path = self.stroke_paths.pop(0)
-                    print "stroke_path", stroke_path
-                    vectors = self.spatial_translation.convert_cartesian_position_and_destination_to_tangents(stroke_path)
-                    print "vectors", vectors
-                    motor_commands = self.spatial_translation.convert_vectors_to_motor_commands(vectors[0], vectors[1], stroke_path['brush_up'])
-                    for motor_command in motor_commands:
-                        print "motor_command", motor_command
-                        self.motor_control.add_to_queue(motor_command)
+                    while len(self.stroke_paths) > 0:
+                        stroke_path = self.stroke_paths.pop(0)
+                        print "stroke_path", stroke_path
+                        vectors = self.spatial_translation.convert_cartesian_position_and_destination_to_tangents(stroke_path)
+                        print "vectors", vectors
+                        motor_commands = self.spatial_translation.convert_vectors_to_motor_commands(vectors[0], vectors[1], stroke_path['brush_up'])
+                        for motor_command in motor_commands:
+                            print "motor_command", motor_command
+                            self.motor_control.add_to_queue(motor_command)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
