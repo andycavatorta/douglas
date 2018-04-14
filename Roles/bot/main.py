@@ -162,7 +162,7 @@ class Motor_Control(threading.Thread):
         stepper_pulses.set("brush_arm", "steps", number_of_pulses)
 
     def motor_callback(self, motor_name, msg_type, data):
-        print "motor_callback +++ ", motor_name, msg_type, data
+        #print "motor_callback +++ ", motor_name, msg_type, data
 
         if msg_type != "steps_cursor":
             print "motor_callback", motor_name, msg_type, data
@@ -216,7 +216,7 @@ class Spatial_Translation(threading.Thread):
         return [        
             {"action":"roll", "value":distance, "speed":0.5},
             {"action":"rotate", "value":angle, "speed":0.5},
-            #{"action":"brush", "value":brush_position_up, "speed":0.5}
+            {"action":"brush", "value":brush_position_up, "speed":0.5}
         ]
         
 
