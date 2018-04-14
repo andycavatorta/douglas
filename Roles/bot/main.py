@@ -204,12 +204,14 @@ class Spatial_Translation(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         self.cartisian_position = {"x":0.0, "y":0.0, "orientation":0.0}
+        self.cartesian_destination = {"x":0.0, "y":0.0, "orientation":0.0} # fake initial values
 
     def set_cartisian_position(self, x, y, orientation):
         self.cartisian_position = {"x":x, "y":y, "orientation":orientation}
 
     def convert_cartesian_position_and_destination_to_tangents(self, destination):
-        origin = self.cartisian_position # for convenience
+        self.cartesian_destination = destination
+        origin = dict(self.cartisian_position) # for convenience
         #print "spatial_translation.translate_cartesian_to_vectors", origin, destination
         distance = math.sqrt(((origin['x'] - destination["x"])**2) + ((origin['y'] - destination["y"])**2))
         # calculate absolute heading relative to Cartesian space, not relative to bot
@@ -278,6 +280,7 @@ class Paths(threading.Thread):
                     self.stroke_paths = msg
                 if topic == "motor_control.request_next_command":
                     stroke_path = self.stroke_paths.pop(0)
+                    vectors = self.spatial_translation.convert_cartesian_position_and_destination_to_tangents(stroke_path)
                     print "stroke_path", stroke_path
 
             except Exception as e:
