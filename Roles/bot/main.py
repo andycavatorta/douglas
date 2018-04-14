@@ -282,6 +282,7 @@ class Paths(threading.Thread):
                     stroke_path = self.stroke_paths.pop(0)
                     vectors = self.spatial_translation.convert_cartesian_position_and_destination_to_tangents(stroke_path)
                     print "stroke_path", stroke_path
+                    print vectors
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
