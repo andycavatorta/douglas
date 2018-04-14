@@ -388,6 +388,7 @@ class Main(threading.Thread):
                 topic, msg = self.queue.get(True)
                 if topic == "path_server.next_stroke_response_{}".format(self.hostname):
                     self.paths.add_to_queue((topic,msg))
+                    self.paths.add_to_queue(("motor_control.request_next_command",False)) # this is late night voodoo
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
