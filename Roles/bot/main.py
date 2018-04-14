@@ -209,9 +209,6 @@ class Spatial_Translation(threading.Thread):
     def set_cartisian_position(self, x, y, orientation):
         self.cartisian_position = {"x":x, "y":y, "orientation":orientation}
 
-    def set_cartesian_position_to_destination(self): # call this when motor_control confirms motion is finished
-
-
     def convert_cartesian_position_and_destination_to_tangents(self, destination):
         self.cartesian_destination = destination
         origin = dict(self.cartisian_position) # for convenience
