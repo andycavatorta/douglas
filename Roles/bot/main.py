@@ -216,7 +216,7 @@ class Spatial_Translation(threading.Thread):
         return [        
             {"action":"roll", "value":distance, "speed":0.5},
             {"action":"rotate", "value":angle, "speed":0.5},
-            {"action":"brush", "value":brush_position_up, "speed":0.5}
+            #{"action":"brush", "value":brush_position_up, "speed":0.5}
         ]
         
 
@@ -260,7 +260,7 @@ class Timed_Events(threading.Thread):
 
     def run(self):
         while True:
-            time.sleep(20)
+            time.sleep(5)
             self.paths.add_to_queue(("timed_events.request_strokes_if_empty",False))
             #self.paths.add_to_queue(("motor_control.request_next_command",False))
 
