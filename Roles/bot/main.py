@@ -308,12 +308,12 @@ class Event_Loop(threading.Thread):
         threading.Thread.__init__(self)
         self.motor_control = motor_control
         self.network = network
-        self.queue = Queue.Queue()
+        self.run_loop_queue = Queue.Queue()
         self.destination = {"x":0.0, "y":0.0, "brush":False, "orientation":0.0,"timestamp":0.0}
         self.location = {"x":0.0,"y":0.0,"orientation":0.0,"timestamp":0.0}
 
     def add_to_queue(self, topic_data):
-        self.queue.put(topic_data)
+        self.run_loop_queue.put(topic_data)
 
     def convert_cartesian_origin_and_destination_to_vectors(self, origin, destination):
         #origin = self.get_odo_location() # let this function handle the processing
