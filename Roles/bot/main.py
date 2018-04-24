@@ -404,7 +404,7 @@ class Main(threading.Thread):
         self.motor_control.daemon = True
         self.motor_control.start()
 
-        self.event_loop = Event_Loop(lps_ip_address == None, self.location, self.stroke, self.leases, self.motor_control)
+        self.event_loop = Event_Loop(self.network, self.motor_control)
         self.event_loop.daemon = True
         self.event_loop.start()
 
