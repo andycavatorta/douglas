@@ -144,7 +144,7 @@ class Motor_Control(threading.Thread):
         self.steps_per_rotation = settings.motor_control["steps_per_rotation"] 
         self.wheel_circumference = settings.motor_control["wheel_circumference"] 
         self.circumference_of_rotation = self.distance_between_wheels * math.pi
-        self.current_motor_command = ["finished" | "brush" | "rotate" | "roll" ][0]
+        self.current_motor_command = ["finished", "brush", "rotate", "roll" ][0]
         self.pulse_odometer = {
             "left_wheel":0,
             "right_wheel":0,
