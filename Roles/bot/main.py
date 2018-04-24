@@ -186,6 +186,9 @@ class Motor_Control(threading.Thread):
         self.motors["right_wheel"].start()
         self.motors["brush"].start()
 
+        self.motors["left_wheel"].add_to_queue("set_speed", 0.5)
+        self.motors["right_wheel"].add_to_queue("set_speed", 0.5)
+        self.motors["brush"].add_to_queue("set_speed", 0.5)
 
 
     def set_callback(self, callback):
