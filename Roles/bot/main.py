@@ -206,7 +206,7 @@ class Motor_Control(threading.Thread):
                 distance = number_of_wheel_rotations * self.wheel_circumference
                 print ">>>>>>>>>>> distance", distance
             if self.current_motor_command == "rotate":
-                length_of_arc = (self.steps_per_rotation / 4.0) / self.pulse_odometer[motor_name]
+                length_of_arc = (self.steps_per_rotation / 4.0) / float(self.pulse_odometer[motor_name])
                 proportion_of_circle = length_of_arc / self.circumference_of_rotation
                 target_angle_relative_to_bot = proportion_of_circle * 360.0
                 print ">>>>>>>>>>> target_angle_relative_to_bot", target_angle_relative_to_bot
@@ -266,7 +266,7 @@ class Motor_Control(threading.Thread):
                         self.current_motor_command = "rotate"
                         proportion_of_circle = float(abs(target_angle_relative_to_bot)) / 360.0
                         length_of_arc = proportion_of_circle * self.circumference_of_rotation
-                        pulses_of_arc = length_of_arc * self.steps_per_rotation * 4 # why * 4?
+                        pulses_of_arc = length_of_arc * float(self.steps_per_rotation) * 4 # why * 4?
                         left_steps, right_steps = (pulses_of_arc, -pulses_of_arc) if target_angle_relative_to_bot > 0 else (-pulses_of_arc, pulses_of_arc)
 
                         # something like
