@@ -237,7 +237,7 @@ class Motor_Control(threading.Thread):
                             "right_wheel":True,
                             "brush":False
                         }
-                        self.motors["brush"].add_to_queue(set_steps, number_of_pulses)
+                        self.motors["brush"].add_to_queue("set_steps", number_of_pulses)
                         # motors send pulse_odometer updates to callback
                         
                         self.brush_block.get(True)  # block until finished
@@ -262,8 +262,8 @@ class Motor_Control(threading.Thread):
                             "right_wheel":False,
                             "brush":True
                         }
-                        self.motors["left_wheel"].add_to_queue(set_steps, left_steps)
-                        self.motors["right_wheel"].add_to_queue(set_steps, right_steps)
+                        self.motors["left_wheel"].add_to_queue("set_steps", left_steps)
+                        self.motors["right_wheel"].add_to_queue("set_steps", right_steps)
                         # motors send pulse_odometer updates to callback
                         
                         self.rotate_block.get(True)# block until both motors are finished
@@ -286,8 +286,8 @@ class Motor_Control(threading.Thread):
                             "right_wheel":False,
                             "brush":True
                         }
-                        self.motors["left_wheel"].add_to_queue(set_steps, left_steps)
-                        self.motors["right_wheel"].add_to_queue(set_steps, right_steps)
+                        self.motors["left_wheel"].add_to_queue("set_steps", left_steps)
+                        self.motors["right_wheel"].add_to_queue("set_steps", right_steps)
                         # motors send pulse_odometer updates to callback
                         
                         self.roll_block.get(True) # block until finished
