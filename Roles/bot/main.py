@@ -369,7 +369,7 @@ class Event_Loop(threading.Thread):
                 if topic[:25] == "event_loop.location_push_":
                     self.location = data
 
-                if topic == "mobility_loop.destination_push_":
+                if topic == "event_loop.destination_push_":
                     self.destination = data
                     vectors = self.convert_cartesian_position_and_destination_to_vectors(self.location, self.destination)
                     vectors["brush"] = data["brush"]
