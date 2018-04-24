@@ -162,7 +162,7 @@ class Motor_Control(threading.Thread):
                 settings.motor_control["stepper_motors"]["left_wheel"]["pulse_pin"], 
                 settings.motor_control["stepper_motors"]["left_wheel"]["dir_pin"], 
                 settings.motor_control["stepper_motors"]["left_wheel"]["base_pulse_period"], 
-                motor_event_callback, 
+                self.motor_event_callback, 
                 settings.motor_control["stepper_motors"]["left_wheel"]["backwards_orientation"]
             ),
             "right_wheel":Motor(
@@ -170,7 +170,7 @@ class Motor_Control(threading.Thread):
                 settings.motor_control["stepper_motors"]["right_wheel"]["pulse_pin"], 
                 settings.motor_control["stepper_motors"]["right_wheel"]["dir_pin"], 
                 settings.motor_control["stepper_motors"]["right_wheel"]["base_pulse_period"], 
-                motor_event_callback, 
+                self.motor_event_callback, 
                 settings.motor_control["stepper_motors"]["right_wheel"]["backwards_orientation"]
             ),
             "brush":Motor(
@@ -178,7 +178,7 @@ class Motor_Control(threading.Thread):
                 settings.motor_control["stepper_motors"]["brush"]["pulse_pin"], 
                 settings.motor_control["stepper_motors"]["brush"]["dir_pin"], 
                 settings.motor_control["stepper_motors"]["brush"]["base_pulse_period"], 
-                motor_event_callback, 
+                self.motor_event_callback, 
                 settings.motor_control["stepper_motors"]["brush"]["backwards_orientation"]
             ),
         }
