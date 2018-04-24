@@ -210,6 +210,12 @@ class Motor_Control(threading.Thread):
                 if self.current_motor_command == "rotate":
                     self.rotate_block.put(True)
                 if self.current_motor_command == "roll":
+                    # both wheels should be rolling so we just need to look at one
+                    # it should also be rolling only forward
+
+                    number_of_wheel_rotations =  self.pulse_odometer[motor_name] / self.steps_per_rotation
+                    distance = number_of_wheel_rotations * self.wheel_circumference
+                    print ">>>>>>>>>>> distance", distance
                     self.roll_block.put(True)
             self.external_callback(motor_name, event_type, self.pulse_odometer[motor_name]) # TO DO: ADD PARAMETERS
 
