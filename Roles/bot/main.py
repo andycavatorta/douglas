@@ -457,3 +457,9 @@ class Main(threading.Thread):
 
 
 
+def init(hostname):
+    main = Main(hostname)
+    main.daemon = True
+    main.start()
+    return main
+
