@@ -423,7 +423,7 @@ class Main(threading.Thread):
         self.event_loop.daemon = True
         self.event_loop.start()
 
-        self.motor_control.set_callback = self.event_loop.motor_control_callback
+        self.motor_control.set_callback(self.event_loop.motor_control_callback)
 
         self.network.thirtybirds.subscribe_to_topic("management.system_status_request")
         self.network.thirtybirds.subscribe_to_topic("management.system_reboot_request")
