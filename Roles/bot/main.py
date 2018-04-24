@@ -198,6 +198,7 @@ class Motor_Control(threading.Thread):
         self.add_to_queue(("set_vectors",(vectors, origin)))
 
     def motor_event_callback(self, motor_name, event_type, data):
+        print "Motor_Control.motor_event_callback motor_name, event_type, data= ", motor_name, event_type, data
         if event_type == "update":
             self.pulse_odometer[motor_name] = data 
             self.external_callback(self.current_motor_command, event_type, self.pulse_odometer[motor_name]) # TO DO: ADD PARAMETERS
