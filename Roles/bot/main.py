@@ -372,6 +372,7 @@ class Event_Loop(threading.Thread):
                     self.destination = data
                     vectors = self.convert_cartesian_position_and_destination_to_vectors(self.location, self.destination)
                     vectors["brush"] = data["brush"]
+                    print "Event_Loop.run vectors=", vectors
                     self.motor_control.set_vectors(vectors, self.location)
 
             except Exception as e:
