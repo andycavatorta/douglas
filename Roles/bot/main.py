@@ -209,7 +209,7 @@ class Motor_Control(threading.Thread):
                 length_of_arc = float(self.pulse_odometer[motor_name]) / (float(self.steps_per_rotation) ) 
                 print ">>>>>>>>>>> length_of_arc", length_of_arc
 
-                proportion_of_circle = length_of_arc / (self.circumference_of_rotation / 4.0 )
+                proportion_of_circle = length_of_arc / (self.circumference_of_rotation )
                 print ">>>>>>>>>>> proportion_of_circle", proportion_of_circle
 
                 target_angle_relative_to_bot = proportion_of_circle * 360.0
