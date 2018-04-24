@@ -369,9 +369,9 @@ class Event_Loop(threading.Thread):
         return {"distance":distance, "target_angle_relative_to_bot":target_angle_relative_to_bot}
 
     def convert_cartesian_origin_and_vector_to_cartesian_position(self, origin, distance, target_angle_relative_to_bot):
-        dx = distance * math.degrees(math.cos(target_angle_relative_to_Cartesian_space))
-        dy = distance * math.degrees(math.sin(target_angle_relative_to_Cartesian_space))
-        location = {"x": origin["x"]+dx ,"y": origin["y"]+dy  ,"orientation":target_angle_relative_to_Cartesian_space, "timestamp":time.time()}
+        dx = distance * math.degrees(math.cos(target_angle_relative_to_bot))
+        dy = distance * math.degrees(math.sin(target_angle_relative_to_bot))
+        location = {"x": origin["x"]+dx ,"y": origin["y"]+dy  ,"orientation":target_angle_relative_to_bot, "timestamp":time.time()}
         return location
 
     def motor_control_callback(self, motor_name, event_type, distance_or_angle): # this runs in the thread of motor_control # status, origin=None, vector=None
