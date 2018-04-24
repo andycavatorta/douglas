@@ -362,10 +362,10 @@ class Event_Loop(threading.Thread):
         location = {"x": origin["x"]+dx ,"y": origin["y"]+dy  ,"orientation":target_angle_relative_to_Cartesian_space, "timestamp":time.time()}
         return location
 
-    def motor_control_callback(self, motor_name, event_type, pulse_odometer[motor_name]): # this runs in the thread of motor_control # status, origin=None, vector=None
+    def motor_control_callback(self, motor_name, event_type, pulse_odometer): # this runs in the thread of motor_control # status, origin=None, vector=None
         
 
-        print "Event_Loop.motor_event_callback motor_name, event_type, data= ", motor_name, event_type, data
+        print "Event_Loop.motor_event_callback motor_name, event_type, pulse_odometer= ", motor_name, event_type, pulse_odometer
         return
         if status == "in_transit":
             new_position = self.convert_cartesian_origin_and_vector_to_cartesian_position(self, origin, vector)
