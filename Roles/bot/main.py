@@ -365,6 +365,7 @@ class Event_Loop(threading.Thread):
         while True:
             try:
                 topic, data = self.run_loop_queue.get(True)
+                print "Event_Loop.run topic, data=", topic, data
                 if topic[:25] == "event_loop.location_push_":
                     self.location = data
 
