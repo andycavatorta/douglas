@@ -207,7 +207,9 @@ class Motor_Control(threading.Thread):
                 print ">>>>>>>>>>> distance", distance
             if self.current_motor_command == "rotate":
                 length_of_arc = (self.steps_per_rotation / 4.0) / float(self.pulse_odometer[motor_name])
+                print ">>>>>>>>>>> length_of_arc", length_of_arc
                 proportion_of_circle = length_of_arc / self.circumference_of_rotation
+                print ">>>>>>>>>>> proportion_of_circle", proportion_of_circle
                 target_angle_relative_to_bot = proportion_of_circle * 360.0
                 print ">>>>>>>>>>> target_angle_relative_to_bot", target_angle_relative_to_bot
             self.external_callback(motor_name, self.current_motor_command, self.pulse_odometer[motor_name]) # TO DO: ADD PARAMETERS
