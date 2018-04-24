@@ -313,6 +313,7 @@ class Event_Loop(threading.Thread):
         self.location = {"x":0.0,"y":0.0,"orientation":0.0,"timestamp":0.0}
 
     def add_to_queue(self, topic_data):
+        print "Event_Loop.add_to_queue topic_data=", topic_data
         self.run_loop_queue.put(topic_data)
 
     def convert_cartesian_origin_and_destination_to_vectors(self, origin, destination):
