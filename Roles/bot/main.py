@@ -207,26 +207,24 @@ class Motor_Control(threading.Thread):
                 print ">>>>>>>>>>> distance", distance
             if self.current_motor_command == "rotate":
                 length_of_arc = float(self.pulse_odometer[motor_name]) / (float(self.steps_per_rotation) ) 
-                print ">>>>>>>>>>> length_of_arc", length_of_arc
-
                 proportion_of_circle = length_of_arc / (self.circumference_of_rotation ) / 4.0
-                print ">>>>>>>>>>> proportion_of_circle", proportion_of_circle
-
                 target_angle_relative_to_bot = proportion_of_circle * 360.0
-                print ">>>>>>>>>>> target_angle_relative_to_bot", target_angle_relative_to_bot
-
-            self.external_callback(motor_name, self.current_motor_command, self.pulse_odometer[motor_name]) # TO DO: ADD PARAMETERS
+                self.external_callback(motor_name, self.current_motor_command, target_angle_relative_to_bot) # TO DO: ADD PARAMETERS
         if event_type == "finished":
             self.finished[motor_name] = True 
             if self.finished["left_wheel"] and self.finished["right_wheel"] and self.finished["brush"]:
                 if self.current_motor_command == "brush":
                     self.brush_block.put(True)
+                    self.external_callback(motor_name, event_type, self.pulse_odometer[motor_name]) # TO DO: ADD PARAMETERS
                 if self.current_motor_command == "rotate":
+                    length_of_arc = float(self.pulse_odometer[motor_name]) / (float(self.steps_per_rotation) ) 
+                    proportion_of_circle = length_of_arc / (self.circumference_of_rotation ) / 4.0
+                    target_angle_relative_to_bot = proportion_of_circle * 360.0
+                    self.external_callback(motor_name, event_type, target_angle_relative_to_bot) # TO DO: ADD PARAMETERS
                     self.rotate_block.put(True)
                 if self.current_motor_command == "roll":
-
                     self.roll_block.put(True)
-            self.external_callback(motor_name, event_type, self.pulse_odometer[motor_name]) # TO DO: ADD PARAMETERS
+                    self.external_callback(motor_name, event_type, self.pulse_odometer[motor_name]) # TO DO: ADD PARAMETERS
 
     def add_to_queue(self, topic_data):
         self.run_loop_queue.put(topic_data)
