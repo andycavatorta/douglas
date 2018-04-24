@@ -8,6 +8,7 @@ pubsub_pubPort = 10012
 pubsub_pubPort2 = 10014
 
 bot_names = [
+    "douglas00",
     "douglas01",
     "douglas02",
     "douglas03",
