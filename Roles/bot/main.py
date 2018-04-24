@@ -24,10 +24,26 @@
 # TO DO: FIDUCIAL MARKER OFFSET TO LPS DATA.  MAYBE DO THIS UPSTREAM ON SERVER?
 # TO DO: HANDLE LEASES BEFORE SENDING PATHS
 
+
+
+
+import commands
+import math
+import os
 import Queue
 import RPi.GPIO as GPIO
-import threading
+import settings
 import time
+import threading
+import traceback
+import sys
+
+from thirtybirds_2_0.Network.manager import init as network_init
+from thirtybirds_2_0.Updates.manager import init as updates_init
+from thirtybirds_2_0.PiUtils.management import init as management_init
+
+
+
 
 
 
