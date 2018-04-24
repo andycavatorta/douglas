@@ -202,7 +202,8 @@ class Motor_Control(threading.Thread):
         if event_type == "update":
             self.pulse_odometer[motor_name] = data 
             if self.current_motor_command == "roll":
-                number_of_wheel_rotations =  self.pulse_odometer[motor_name] / self.steps_per_rotation
+                number_of_wheel_rotations =  self.pulse_odometer[motor_name] / float(self.steps_per_rotation)
+                print ">>>>>>>>>>> number_of_wheel_rotations", number_of_wheel_rotations
                 distance = number_of_wheel_rotations * self.wheel_circumference
                 print ">>>>>>>>>>> distance", distance
             if self.current_motor_command == "rotate":
