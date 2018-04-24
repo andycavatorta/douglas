@@ -221,7 +221,11 @@ class Motor_Control(threading.Thread):
                 topic, data = self.run_loop_queue.get(True)
                 if topic == "set_vectors":
                     vectors, origin = data
-                    distance, target_angle_relative_to_bot, brush = vectors
+                    print "Motor_Control.run vectors, origin = ", vectors, origin
+                    distance = vectors["distance"]
+                    target_angle_relative_to_bot = vectors["target_angle_relative_to_bot"]
+                    brush = vectors["brush"]
+                    #distance, target_angle_relative_to_bot, brush = vectors
                     # convert vectors to three motor commands
 
                     ##### brush action #####
