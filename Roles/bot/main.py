@@ -198,7 +198,7 @@ class Motor_Control(threading.Thread):
         self.add_to_queue(("set_vectors",(vectors, origin)))
 
     def motor_event_callback(self, motor_name, event_type, data):
-        print "Motor_Control.motor_event_callback motor_name, event_type, data= ", motor_name, event_type, data
+        
         if event_type == "update":
             self.pulse_odometer[motor_name] = data 
             self.external_callback(self.current_motor_command, event_type, self.pulse_odometer[motor_name]) # TO DO: ADD PARAMETERS
@@ -211,7 +211,7 @@ class Motor_Control(threading.Thread):
                     self.rotate_block.put(True)
                 if self.current_motor_command == "roll":
                     self.roll_block.put(True)
-        self.external_callback(self.current_motor_command, event_type, self.pulse_odometer[motor_name]) # TO DO: ADD PARAMETERS
+            self.external_callback(self.current_motor_command, event_type, self.pulse_odometer[motor_name]) # TO DO: ADD PARAMETERS
 
     def add_to_queue(self, topic_data):
         self.run_loop_queue.put(topic_data)
@@ -362,7 +362,11 @@ class Event_Loop(threading.Thread):
         location = {"x": origin["x"]+dx ,"y": origin["y"]+dy  ,"orientation":target_angle_relative_to_Cartesian_space, "timestamp":time.time()}
         return location
 
-    def motor_control_callback(self, status, origin=None, vector=None): # this runs in the thread of motor_control
+    def motor_control_callback(self, motor_name, event_type, pulse_odometer[motor_name]): # this runs in the thread of motor_control # status, origin=None, vector=None
+        
+
+        print "Event_Loop.motor_event_callback motor_name, event_type, data= ", motor_name, event_type, data
+        return
         if status == "in_transit":
             new_position = self.convert_cartesian_origin_and_vector_to_cartesian_position(self, origin, vector)
             self.network.thirtybirds.send("motor_control.location_update", new_position)
