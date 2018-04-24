@@ -191,7 +191,7 @@ class Motor_Control(threading.Thread):
     def set_callback(self, callback):
         self.external_callback = callback # not thread safe but it will be okay
 
-    def set_vectors(self, vectors, origin, callback):
+    def set_vectors(self, vectors, origin):
         self.add_to_queue(("set_vectors",(vectors, origin)))
 
     def motor_event_callback(self, motor_name, event_type, data):
