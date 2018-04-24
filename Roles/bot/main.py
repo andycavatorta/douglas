@@ -122,7 +122,7 @@ class Motor(threading.Thread):
                 time.sleep(self.base_pulse_period * (1.0 / self.speed)) # actual sleep period will be longer b/c of processor scheduling
                 self.steps_cursor += 1 
                 #if self.steps_cursor%10 == 0:
-                self.status_callback(self.name, "steps_cursor", self.steps_cursor)
+                self.status_callback(self.name, "update", self.steps_cursor)
                 if self.steps == self.steps_cursor:
                     self.status_callback(self.name, "finished", self.steps_cursor)
             else:
