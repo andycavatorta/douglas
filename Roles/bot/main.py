@@ -202,8 +202,7 @@ class Motor_Control(threading.Thread):
         if event_type == "update":
             self.pulse_odometer[motor_name] = data 
             if self.current_motor_command == "roll":
-                number_of_wheel_rotations =  self.pulse_odometer[motor_name] / float(self.steps_per_rotation)
-                distance = number_of_wheel_rotations * self.wheel_circumference
+                distance = self.pulse_odometer[motor_name] / float(self.steps_per_rotation) * self.wheel_circumference
                 self.external_callback(motor_name, self.current_motor_command, distance)
             if self.current_motor_command == "rotate":
                 length_of_arc = float(self.pulse_odometer[motor_name]) / (float(self.steps_per_rotation) ) 
@@ -223,8 +222,9 @@ class Motor_Control(threading.Thread):
                     self.external_callback(motor_name, event_type, target_angle_relative_to_bot) # TO DO: ADD PARAMETERS
                     self.rotate_block.put(True)
                 if self.current_motor_command == "roll":
-                    self.roll_block.put(True)
+                    distance = self.pulse_odometer[motor_name] / float(self.steps_per_rotation) * self.wheel_circumference
                     self.external_callback(motor_name, self.current_motor_command, distance) # TO DO: ADD PARAMETERS
+                    self.roll_block.put(True)
 
     def add_to_queue(self, topic_data):
         self.run_loop_queue.put(topic_data)
