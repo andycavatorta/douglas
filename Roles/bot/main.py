@@ -201,7 +201,7 @@ class Motor_Control(threading.Thread):
         
         if event_type == "update":
             self.pulse_odometer[motor_name] = data 
-            self.external_callback(self.pulse_odometer[motor_name], self.current_motor_command, self.pulse_odometer[motor_name]) # TO DO: ADD PARAMETERS
+            self.external_callback(motor_name, self.current_motor_command, self.pulse_odometer[motor_name]) # TO DO: ADD PARAMETERS
         if event_type == "finished":
             self.finished[motor_name] = True 
             if self.finished["left_wheel"] and self.finished["right_wheel"] and self.finished["brush"]:
@@ -211,7 +211,7 @@ class Motor_Control(threading.Thread):
                     self.rotate_block.put(True)
                 if self.current_motor_command == "roll":
                     self.roll_block.put(True)
-            self.external_callback(self.pulse_odometer[motor_name], event_type, self.pulse_odometer[motor_name]) # TO DO: ADD PARAMETERS
+            self.external_callback(motor_name, event_type, self.pulse_odometer[motor_name]) # TO DO: ADD PARAMETERS
 
     def add_to_queue(self, topic_data):
         self.run_loop_queue.put(topic_data)
