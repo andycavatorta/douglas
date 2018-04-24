@@ -40,8 +40,8 @@ dashboard_names = [
     "douglas_dashboard"
 ]
 
-location_server = {
-    "location_disparity_threshold":{
+location = {
+    "disparity_threshold":{
         "x":0.1,
         "y":0.1,
         "orientation":5.0,
@@ -71,7 +71,7 @@ motor_control = {
             "status_callback":None,
             "backwards_orientation":True,
         },
-        "brush_arm":{
+        "brush":{
             "pulse_pin":6,
             "dir_pin":12,
             "base_pulse_period":0.0005,

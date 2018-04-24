@@ -10,13 +10,11 @@ import traceback
 import socket
 import sys
 
-
 BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 UPPER_PATH = os.path.split(os.path.dirname(os.path.realpath(__file__)))[0]
 THIRTYBIRDS_PATH = "%s/thirtybirds_2_0" % (UPPER_PATH )
 
 from thirtybirds_2_0.Network.manager import init as network_init
-
 
 class Paths(threading.Thread):
     def __init__(self, drawing_name, canvas_size, network):
