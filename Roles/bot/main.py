@@ -206,7 +206,7 @@ class Motor_Control(threading.Thread):
                 distance = number_of_wheel_rotations * self.wheel_circumference
                 print ">>>>>>>>>>> distance", distance
             if self.current_motor_command == "rotate":
-                length_of_arc = float(self.pulse_odometer[motor_name]) / (float(self.steps_per_rotation) / 4.0) 
+                length_of_arc = float(self.pulse_odometer[motor_name]) / (float(self.steps_per_rotation) ) 
                 print ">>>>>>>>>>> length_of_arc", length_of_arc
 
                 proportion_of_circle = length_of_arc / self.circumference_of_rotation
