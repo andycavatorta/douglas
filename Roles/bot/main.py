@@ -351,7 +351,7 @@ class Event_Loop(threading.Thread):
         elif origin['x'] == destination["x"] and origin['y'] < destination["y"]: # y-axis positive
             target_angle_relative_to_Cartesian_space = 90.0
         elif origin['x'] == destination["x"] and origin['y'] > destination["y"]: # y-axis negative
-            target_angle_relative_to_Cartesian_space = -90.0
+            target_angle_relative_to_Cartesian_space = 270.0
         elif origin['x'] < destination["x"] and origin['y'] < destination["y"]: # somewhere in quadrant 1
             target_angle_relative_to_Cartesian_space =  math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
         elif origin['x'] > destination["x"] and origin['y'] < destination["y"]: # somewhere in quadrant 2
@@ -359,7 +359,7 @@ class Event_Loop(threading.Thread):
         elif origin['x'] > destination["x"] and origin['y'] > destination["y"]: # somewhere in quadrant 3
             target_angle_relative_to_Cartesian_space =  180 + math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
         elif origin['x'] < destination["x"] and origin['y'] > destination["y"]: # somewhere in quadrant 4
-            target_angle_relative_to_Cartesian_space =  -90 + math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
+            target_angle_relative_to_Cartesian_space =  270 + math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
         else : # we should never end up here
             print "Coordinates_To_Vectors.calculate_vectors_from_target_coordinates cannot assign quadrant", origin['x'], destination["x"], origin['y'], destination["y"]
             distance = 0.0
@@ -368,17 +368,18 @@ class Event_Loop(threading.Thread):
         target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin['orientation']
         return {"distance":distance, "target_angle_relative_to_bot":target_angle_relative_to_bot}
 
-    def convert_cartesian_origin_and_vector_to_cartesian_position(self, origin, vector):
-        distance, target_angle_relative_to_bot = vector
+    def convert_cartesian_origin_and_vector_to_cartesian_position(self, origin, distance, target_angle_relative_to_bot):
         dx = distance * math.degrees(math.cos(target_angle_relative_to_Cartesian_space))
         dy = distance * math.degrees(math.sin(target_angle_relative_to_Cartesian_space))
         location = {"x": origin["x"]+dx ,"y": origin["y"]+dy  ,"orientation":target_angle_relative_to_Cartesian_space, "timestamp":time.time()}
         return location
 
-    def motor_control_callback(self, motor_name, event_type, pulse_odometer): # this runs in the thread of motor_control # status, origin=None, vector=None
-        
-
-        print "Event_Loop.motor_event_callback motor_name, event_type, pulse_odometer= ", motor_name, event_type, pulse_odometer
+    def motor_control_callback(self, motor_name, event_type, distance_or_angle): # this runs in the thread of motor_control # status, origin=None, vector=None
+        print "Event_Loop.motor_event_callback motor_name, event_type, pulse_odometer= ", motor_name, event_type, distance_or_angle
+        if event_type == "rotate":
+            print self.convert_cartesian_origin_and_vector_to_cartesian_position(self.location, 0.0, distance_or_angle)
+        if event_type == "roll":
+            print self.convert_cartesian_origin_and_vector_to_cartesian_position(self.location, distance_or_angle, 0.0)
         return
         if status == "in_transit":
             new_position = self.convert_cartesian_origin_and_vector_to_cartesian_position(self, origin, vector)
