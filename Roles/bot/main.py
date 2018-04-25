@@ -373,7 +373,7 @@ class Event_Loop(threading.Thread):
             angle = angle-((int(angle)/360)*360.0)
             self.location["orientation"] = angle
             self.origin = dict(self.location)
-            print self.location
+            #print self.location
 
         if event_type == "roll":
             target_angle_relative_to_Cartesian_space = self.location["orientation"]
@@ -389,7 +389,7 @@ class Event_Loop(threading.Thread):
             self.location["y"] = relative_location["y"]
 
             self.origin = dict(self.location)
-            print self.location
+            #print self.location
 
         #if event_type == "finished":
         #return
