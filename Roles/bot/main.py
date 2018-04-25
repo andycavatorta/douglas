@@ -331,6 +331,7 @@ class Event_Loop(threading.Thread):
         self.run_loop_queue = Queue.Queue()
         self.destination = {"x":0.0, "y":0.0, "brush":False, "orientation":0.0,"timestamp":0.0}
         self.location = {"x":0.0,"y":0.0,"orientation":0.0,"timestamp":0.0}
+        self.origin = {"x":0.0,"y":0.0,"orientation":0.0,"timestamp":0.0}
         #self.location_odo = {"x":0.0,"y":0.0,"orientation":0.0,"timestamp":0.0} # this is used to accululate changes during transit
 
     def add_to_queue(self, topic_data):
@@ -379,11 +380,11 @@ class Event_Loop(threading.Thread):
 
         if event_type == "finished_rotate":
             relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.location, 0.0, distance_or_angle)
-            self.location = {
-                "x":self.location["x"] + relative_location["x"],
-                "y":self.location["y"] + relative_location["y"],
-                "orientation":self.location["orientation"] + relative_location["orientation"]
-            }
+            angle = self.origin["orientation"] + relative_location["orientation"]
+            angle = angle-((int(angle)/360)*360.0)
+            self.location["orientation"] = angle
+            self.origin = dict(self.location)
+                
             print self.location
         if event_type == "finished_roll":
             relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.location, 0.0, distance_or_angle)
@@ -397,12 +398,12 @@ class Event_Loop(threading.Thread):
         return
         if event_type == "rotate":
             relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.location, 0.0, distance_or_angle)
-            location_odo = {
-                "x":self.location["x"] + relative_location["x"],
-                "y":self.location["y"] + relative_location["y"],
-                "orientation":self.location["orientation"] + relative_location["orientation"]
-            }
-            print location_odo
+            angle = self.origin["orientation"] + relative_location["orientation"]
+            angle = angle-((int(angle)/360)*360.0)
+            self.location["orientation"] = angle
+            #self.origin = dict(self.location)
+                
+            print self.location
 
         if event_type == "roll":
             relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.location, distance_or_angle, 0.0)
@@ -426,7 +427,8 @@ class Event_Loop(threading.Thread):
                 topic, data = self.run_loop_queue.get(True)
                 print "Event_Loop.run topic, data=", topic, data
                 if topic[:25] == "event_loop.location_push_":
-                    self.location = data
+                    self.origin = dict(data)
+                    self.location = dict(data)
 
                 if topic == "event_loop.destination_push_":
                     self.destination = data
