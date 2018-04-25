@@ -383,7 +383,6 @@ class Event_Loop(threading.Thread):
             angle = angle-((int(angle)/360)*360.0)
             self.location["orientation"] = angle
             #self.origin = dict(self.location)
-                
             #print self.location
 
         if event_type == "finished_rotate":
@@ -397,25 +396,20 @@ class Event_Loop(threading.Thread):
 
         if event_type == "roll":
             target_angle_relative_to_Cartesian_space = self.location["orientation"]
-            relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.location, distance_or_angle, target_angle_relative_to_Cartesian_space)
-            print relative_location
-            return
-            self.location["x"] = self.location["x"] + relative_location["x"]
-            self.location["y"] = self.location["y"] + relative_location["y"]
-            location_odo = {
-                "x":self.location["x"] + relative_location["x"],
-                "y":self.location["y"] + relative_location["y"],
-                "orientation":self.location["orientation"] + relative_location["orientation"]
-            }
-            #print location_odo
+            relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.origin, distance_or_angle, target_angle_relative_to_Cartesian_space)
+            self.location["x"] = relative_location["x"]
+            self.location["y"] = relative_location["y"]
+
+            print self.location
+
 
         if event_type == "finished_roll":
-            relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.location, 0.0, distance_or_angle)
-            self.location = {
-                "x":self.location["x"] + relative_location["x"],
-                "y":self.location["y"] + relative_location["y"],
-                "orientation":self.location["orientation"] + relative_location["orientation"]
-            }
+            target_angle_relative_to_Cartesian_space = self.location["orientation"]
+            relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.origin, distance_or_angle, target_angle_relative_to_Cartesian_space)
+            self.location["x"] = relative_location["x"]
+            self.location["y"] = relative_location["y"]
+
+            self.origin = dict(self.location)
             print self.location
 
         #if event_type == "finished":
