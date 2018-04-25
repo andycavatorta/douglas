@@ -396,7 +396,7 @@ class Event_Loop(threading.Thread):
             print self.location
 
         if event_type == "roll":
-            target_angle_relative_to_Cartesian_space = self.location["orientation"] + relative_location["orientation"]
+            target_angle_relative_to_Cartesian_space = self.location["orientation"]
             relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.location, target_angle_relative_to_Cartesian_space, 0.0)
             print relative_location
             return
