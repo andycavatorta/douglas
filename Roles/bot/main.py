@@ -354,8 +354,7 @@ class Event_Loop(threading.Thread):
     def convert_cartesian_origin_and_vector_to_cartesian_position(self, origin, distance, target_angle_relative_to_Cartesian_space):
         dx = distance * math.cos(math.radians(target_angle_relative_to_Cartesian_space))
         dy = distance * math.sin(math.radians(target_angle_relative_to_Cartesian_space))
-        #print dx, dy
-        location = {"x": origin["x"]+dx ,"y": origin["y"]+dy  ,"orientation":target_angle_relative_to_Cartesian_space, "timestamp":time.time()}
+        location = {"x": origin["x"]+dx ,"y": origin["y"] + dy  ,"orientation":target_angle_relative_to_Cartesian_space, "timestamp":time.time()}
         return location
 
     def motor_control_callback(self, motor_name, event_type, distance_or_angle): # this runs in the thread of motor_control # status, origin=None, vector=None
@@ -389,7 +388,7 @@ class Event_Loop(threading.Thread):
             self.location["y"] = relative_location["y"]
 
             self.origin = dict(self.location)
-            #print self.location
+            print self.location
 
         #if event_type == "finished":
         #return
