@@ -29,6 +29,7 @@
 
 import commands
 import math
+import numpy as np
 import os
 import Queue
 import RPi.GPIO as GPIO
@@ -338,36 +339,17 @@ class Event_Loop(threading.Thread):
         print "Event_Loop.add_to_queue topic_data=", topic_data
         self.run_loop_queue.put(topic_data)
 
-    def convert_cartesian_origin_and_destination_to_vectors(self, origin, destination):
-        #origin = self.get_odo_location() # let this function handle the processing
-        #print "spatial_translation.translate_cartesian_to_vectors", origin, destination
-        distance = math.sqrt(((origin['x'] - destination["x"])**2) + ((origin['y'] - destination["y"])**2))
-        # calculate absolute heading relative to Cartesian space, not relative to bot
-        if origin['x'] == destination["x"] and origin['y'] == destination["y"]: # no movement
-            target_angle_relative_to_Cartesian_space = origin["orientation"]
-        elif origin['x'] < destination["x"] and origin['y'] == destination["y"]: # x-axis positive
-            target_angle_relative_to_Cartesian_space = 0.0
-        elif origin['x'] > destination["x"] and origin['y'] == destination["y"]: # x-axis negative
-            target_angle_relative_to_Cartesian_space = 180.0
-        elif origin['x'] == destination["x"] and origin['y'] < destination["y"]: # y-axis positive
-            target_angle_relative_to_Cartesian_space = 90.0
-        elif origin['x'] == destination["x"] and origin['y'] > destination["y"]: # y-axis negative
-            target_angle_relative_to_Cartesian_space = 270.0
-        elif origin['x'] < destination["x"] and origin['y'] < destination["y"]: # somewhere in quadrant 1
-            target_angle_relative_to_Cartesian_space =  math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
-        elif origin['x'] > destination["x"] and origin['y'] < destination["y"]: # somewhere in quadrant 2
-            target_angle_relative_to_Cartesian_space =  90 + math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
-        elif origin['x'] > destination["x"] and origin['y'] > destination["y"]: # somewhere in quadrant 3
-            target_angle_relative_to_Cartesian_space =  180 + math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
-        elif origin['x'] < destination["x"] and origin['y'] > destination["y"]: # somewhere in quadrant 4
-            target_angle_relative_to_Cartesian_space =  270 + math.degrees(math.acos( abs(destination["x"]-origin['x']) / distance) )
-        else : # we should never end up here
-            print "Coordinates_To_Vectors.calculate_vectors_from_target_coordinates cannot assign quadrant", origin['x'], destination["x"], origin['y'], destination["y"]
-            distance = 0.0
-            target_angle_relative_to_Cartesian_space = origin["orientation"]
-            target_angle_relative_to_bot = 0.0
-        target_angle_relative_to_bot = target_angle_relative_to_Cartesian_space - origin['orientation']
-        return {"distance":distance, "target_angle_relative_to_bot":target_angle_relative_to_bot}
+    def convert_cartesian_to_polar(self, origin, destination):
+        dx = origin['x'] - destination["x"]
+        dy = origin['y'] - destination["y"]
+        radius = np.sqrt(dx**2+dy**2)
+        angle_relative_to_cartesian_space = math.degrees(np.arctan2(dy,dx))
+        target_angle_relative_to_bot = angle_relative_to_cartesian_space - origin['orientation']
+        return {
+            "distance":radius, 
+            "target_angle_relative_to_bot":target_angle_relative_to_bot, 
+            "angle_relative_to_cartesian_space":angle_relative_to_cartesian_space
+        }
 
     def convert_cartesian_origin_and_vector_to_cartesian_position(self, origin, distance, target_angle_relative_to_Cartesian_space):
         dx = distance * math.cos(math.radians(target_angle_relative_to_Cartesian_space))
@@ -428,7 +410,7 @@ class Event_Loop(threading.Thread):
 
                 if topic == "event_loop.destination_push_":
                     self.destination = data
-                    vectors = self.convert_cartesian_origin_and_destination_to_vectors(self.origin, self.destination)
+                    vectors = self.convert_cartesian_to_polar(self.origin, self.destination)
                     vectors["brush"] = data["brush"]
                     print "Event_Loop.run vectors=", vectors
                     self.motor_control.set_vectors(vectors, self.location)
