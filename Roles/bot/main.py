@@ -213,16 +213,16 @@ class Motor_Control(threading.Thread):
             if self.finished["left_wheel"] and self.finished["right_wheel"] and self.finished["brush"]:
                 if self.current_motor_command == "brush":
                     self.brush_block.put(True)
-                    self.external_callback(motor_name, event_type, self.pulse_odometer[motor_name]) # TO DO: ADD PARAMETERS
+                    self.external_callback(motor_name, "finished_brush", self.pulse_odometer[motor_name]) # TO DO: ADD PARAMETERS
                 if self.current_motor_command == "rotate":
                     length_of_arc = float(self.pulse_odometer[motor_name]) / (float(self.steps_per_rotation) ) 
                     proportion_of_circle = length_of_arc / (self.circumference_of_rotation ) / 4.0
                     target_angle_relative_to_bot = proportion_of_circle * 360.0
-                    self.external_callback(motor_name, event_type, target_angle_relative_to_bot) # TO DO: ADD PARAMETERS
+                    self.external_callback(motor_name, "finished_rotate", target_angle_relative_to_bot) # TO DO: ADD PARAMETERS
                     self.rotate_block.put(True)
                 if self.current_motor_command == "roll":
                     distance = self.pulse_odometer[motor_name] / float(self.steps_per_rotation) * self.wheel_circumference
-                    self.external_callback(motor_name, self.current_motor_command, distance) # TO DO: ADD PARAMETERS
+                    self.external_callback(motor_name, "finished_roll", distance) # TO DO: ADD PARAMETERS
                     self.roll_block.put(True)
 
     def add_to_queue(self, topic_data):
@@ -375,7 +375,8 @@ class Event_Loop(threading.Thread):
         return location
 
     def motor_control_callback(self, motor_name, event_type, distance_or_angle): # this runs in the thread of motor_control # status, origin=None, vector=None
-        #print "Event_Loop.motor_event_callback motor_name, event_type, pulse_odometer= ", motor_name, event_type, distance_or_angle
+        print "Event_Loop.motor_event_callback motor_name, event_type, pulse_odometer= ", motor_name, event_type, distance_or_angle
+        return
         if event_type == "rotate":
             relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.location, 0.0, distance_or_angle)
             location_odo = {
@@ -383,7 +384,7 @@ class Event_Loop(threading.Thread):
                 "y":self.location["y"] + relative_location["y"],
                 "orientation":self.location["orientation"] + relative_location["orientation"]
             }
-
+            print location_odo
 
         if event_type == "roll":
             relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.location, distance_or_angle, 0.0)
@@ -392,7 +393,8 @@ class Event_Loop(threading.Thread):
                 "y":self.location["y"] + relative_location["y"],
                 "orientation":self.location["orientation"] + relative_location["orientation"]
             }
-        print location_odo
+            print location_odo
+        #if event_type == "finished":
         #return
         #if status == "in_transit":
         #    new_position = self.convert_cartesian_origin_and_vector_to_cartesian_position(self, origin, vector)
