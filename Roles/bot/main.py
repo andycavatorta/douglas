@@ -379,7 +379,6 @@ class Event_Loop(threading.Thread):
     def motor_control_callback(self, motor_name, event_type, distance_or_angle): # this runs in the thread of motor_control # status, origin=None, vector=None
         #print "Event_Loop.motor_event_callback motor_name, event_type, pulse_odometer= ", motor_name, event_type, distance_or_angle
         if event_type == "rotate":
-            #relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.location, 0.0, distance_or_angle)
             angle = self.origin["orientation"] + distance_or_angle
             angle = angle-((int(angle)/360)*360.0)
             self.location["orientation"] = angle
@@ -392,7 +391,6 @@ class Event_Loop(threading.Thread):
             angle = angle-((int(angle)/360)*360.0)
             self.location["orientation"] = angle
             self.origin = dict(self.location)
-                
             print self.location
 
         if event_type == "roll":
@@ -400,9 +398,7 @@ class Event_Loop(threading.Thread):
             relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.origin, distance_or_angle, target_angle_relative_to_Cartesian_space)
             self.location["x"] = relative_location["x"]
             self.location["y"] = relative_location["y"]
-
             #print self.location
-
 
         if event_type == "finished_roll":
             target_angle_relative_to_Cartesian_space = self.location["orientation"]
@@ -432,7 +428,7 @@ class Event_Loop(threading.Thread):
 
                 if topic == "event_loop.destination_push_":
                     self.destination = data
-                    vectors = self.convert_cartesian_origin_and_destination_to_vectors(self.location, self.destination)
+                    vectors = self.convert_cartesian_origin_and_destination_to_vectors(self.origin, self.destination)
                     vectors["brush"] = data["brush"]
                     print "Event_Loop.run vectors=", vectors
                     self.motor_control.set_vectors(vectors, self.location)
