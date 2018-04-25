@@ -198,7 +198,6 @@ class Motor_Control(threading.Thread):
         self.add_to_queue(("set_vectors",(vectors, origin)))
 
     def motor_event_callback(self, motor_name, event_type, data):
-        
         if event_type == "update":
             self.pulse_odometer[motor_name] = data 
             if self.current_motor_command == "roll":
@@ -332,6 +331,7 @@ class Event_Loop(threading.Thread):
         self.run_loop_queue = Queue.Queue()
         self.destination = {"x":0.0, "y":0.0, "brush":False, "orientation":0.0,"timestamp":0.0}
         self.location = {"x":0.0,"y":0.0,"orientation":0.0,"timestamp":0.0}
+        #self.location_odo = {"x":0.0,"y":0.0,"orientation":0.0,"timestamp":0.0} # this is used to accululate changes during transit
 
     def add_to_queue(self, topic_data):
         print "Event_Loop.add_to_queue topic_data=", topic_data
@@ -375,17 +375,30 @@ class Event_Loop(threading.Thread):
         return location
 
     def motor_control_callback(self, motor_name, event_type, distance_or_angle): # this runs in the thread of motor_control # status, origin=None, vector=None
-        print "Event_Loop.motor_event_callback motor_name, event_type, pulse_odometer= ", motor_name, event_type, distance_or_angle
+        #print "Event_Loop.motor_event_callback motor_name, event_type, pulse_odometer= ", motor_name, event_type, distance_or_angle
         if event_type == "rotate":
-            print self.convert_cartesian_origin_and_vector_to_cartesian_position(self.location, 0.0, distance_or_angle)
+            relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.location, 0.0, distance_or_angle)
+            location_odo = {
+                "x":self.location["x"] + relative_location["x"],
+                "y":self.location["y"] + relative_location["y"],
+                "orientation":self.location["orientation"] + relative_location["orientation"]
+            }
+
+
         if event_type == "roll":
-            print self.convert_cartesian_origin_and_vector_to_cartesian_position(self.location, distance_or_angle, 0.0)
-        return
-        if status == "in_transit":
-            new_position = self.convert_cartesian_origin_and_vector_to_cartesian_position(self, origin, vector)
-            self.network.thirtybirds.send("motor_control.location_update", new_position)
-        if status == "_finished":
-            self.network.thirtybirds.send("motor_control.finished", False)
+            relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.location, distance_or_angle, 0.0)
+            location_odo = {
+                "x":self.location["x"] + relative_location["x"],
+                "y":self.location["y"] + relative_location["y"],
+                "orientation":self.location["orientation"] + relative_location["orientation"]
+            }
+        print location_odo
+        #return
+        #if status == "in_transit":
+        #    new_position = self.convert_cartesian_origin_and_vector_to_cartesian_position(self, origin, vector)
+        #    self.network.thirtybirds.send("motor_control.location_update", new_position)
+        #if status == "_finished":
+        #    self.network.thirtybirds.send("motor_control.finished", False)
 
     def run(self):
         while True:
