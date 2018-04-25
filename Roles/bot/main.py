@@ -370,8 +370,8 @@ class Event_Loop(threading.Thread):
         return {"distance":distance, "target_angle_relative_to_bot":target_angle_relative_to_bot}
 
     def convert_cartesian_origin_and_vector_to_cartesian_position(self, origin, distance, target_angle_relative_to_Cartesian_space):
-        dx = distance * math.degrees(math.cos(target_angle_relative_to_Cartesian_space))
-        dy = distance * math.degrees(math.sin(target_angle_relative_to_Cartesian_space))
+        dx = distance * math.cos(math.radians(target_angle_relative_to_Cartesian_space))
+        dy = distance * math.sin(math.radians(target_angle_relative_to_Cartesian_space))
         location = {"x": origin["x"]+dx ,"y": origin["y"]+dy  ,"orientation":target_angle_relative_to_Cartesian_space, "timestamp":time.time()}
         return location
 
