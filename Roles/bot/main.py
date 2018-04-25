@@ -375,7 +375,25 @@ class Event_Loop(threading.Thread):
         return location
 
     def motor_control_callback(self, motor_name, event_type, distance_or_angle): # this runs in the thread of motor_control # status, origin=None, vector=None
-        print "Event_Loop.motor_event_callback motor_name, event_type, pulse_odometer= ", motor_name, event_type, distance_or_angle
+        #print "Event_Loop.motor_event_callback motor_name, event_type, pulse_odometer= ", motor_name, event_type, distance_or_angle
+
+        if event_type == "finished_rotate":
+            relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.location, 0.0, distance_or_angle)
+            self.location = {
+                "x":self.location["x"] + relative_location["x"],
+                "y":self.location["y"] + relative_location["y"],
+                "orientation":self.location["orientation"] + relative_location["orientation"]
+            }
+            print self.location
+        if event_type == "finished_roll":
+            relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.location, 0.0, distance_or_angle)
+            self.location = {
+                "x":self.location["x"] + relative_location["x"],
+                "y":self.location["y"] + relative_location["y"],
+                "orientation":self.location["orientation"] + relative_location["orientation"]
+            }
+            print self.location
+
         return
         if event_type == "rotate":
             relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.location, 0.0, distance_or_angle)
