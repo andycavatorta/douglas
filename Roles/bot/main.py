@@ -340,8 +340,8 @@ class Event_Loop(threading.Thread):
         self.run_loop_queue.put(topic_data)
 
     def convert_cartesian_to_polar(self, origin, destination):
-        dx = origin['x'] - destination["x"]
-        dy = origin['y'] - destination["y"]
+        dx = destination["x"] - origin['x']
+        dy = destination["y"] - origin['y']
         radius = np.sqrt(dx**2+dy**2)
         angle_relative_to_cartesian_space = math.degrees(np.arctan2(dy,dx))
         target_angle_relative_to_bot = angle_relative_to_cartesian_space - origin['orientation']
