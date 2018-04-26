@@ -438,6 +438,7 @@ class Main(threading.Thread):
         threading.Thread.__init__(self)
         self.queue = Queue.Queue()
         self.hostname = hostname
+        self.management = management_init()
         self.default_motor_speed = default_motor_speed
         self.network = Network(hostname, self.network_message_handler, self.network_status_handler)
 
@@ -458,7 +459,7 @@ class Main(threading.Thread):
         self.network.thirtybirds.subscribe_to_topic("management.scripts_update_request")
         self.network.thirtybirds.subscribe_to_topic("event_loop.destination_push_{}".format(self.hostname))
         self.network.thirtybirds.subscribe_to_topic("event_loop.location_push_{}".format(self.hostname))
-        self.network.thirtybirds.send("present", True)
+        self.network.thirtybirds.send("register_with_server", self.hostname)
 
 
     def network_message_handler(self, topic_data):
@@ -491,16 +492,21 @@ class Main(threading.Thread):
                 if topic[:25] == "event_loop.location_push_":
                     self.event_loop.add_to_queue((topic,data))
                     continue
-                if topic == "management.system_status_response":
-                    pass
-                if topic == "management.system_reboot_response":
-                    pass
-                if topic == "management.system_shutdown_response":
-                    pass
-                if topic == "management.git_pull_response":
-                    pass
-                if topic == "management.scripts_update_response":
-                    pass
+                if topic == "management.system_status_request":
+                    network.send("management.system_status_response", self.management.get_system_status(msg))
+                    continue
+                if topic == "management.system_reboot_request":
+                    network.send("management.system_reboot_response", self.management.system_reboot())
+                    continue
+                if topic == "management.system_shutdown_request":
+                    network.send("management.system_shutdown_response", self.management.system_shutdown())
+                    continue
+                if topic == "management.git_pull_request":
+                    network.send("management.git_pull_response", self.management.git_pull(msg))
+                    continue
+                if topic == "management.scripts_update_request":
+                    network.send("management.scripts_update_response", self.management.scripts_update(msg))
+                    continue
                 if topic == "present":
                     pass
                 #if topic == "motion.leases.request":
