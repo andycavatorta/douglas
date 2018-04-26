@@ -186,6 +186,10 @@ class Main(threading.Thread):
                     pass
                 if topic == "path_server.next_stroke_request":
                     self.paths.add_to_queue(["path_server.next_stroke_request", data])
+                    coords = self.paths.get_next_coords_for_path(data)
+                    if coords is not False:
+                        topic = "event_loop.destination_push_{}".format(botname)
+                        self.network.thirtybirds.send(topic, coords)
                 if topic == "path_server.paths_response":
                     pass
                 if topic == "path_server.path_to_available_paint_response":

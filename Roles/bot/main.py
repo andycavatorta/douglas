@@ -389,7 +389,9 @@ class Event_Loop(threading.Thread):
 
             self.origin = dict(self.location)
             print self.location
+            #path_server.next_stroke_request
 
+            self.network.thirtybirds.send("path_server.next_stroke_request", self.hostname)
         #if event_type == "finished":
         #return
         #if status == "in_transit":
@@ -478,6 +480,7 @@ class Main(threading.Thread):
         print "Main.network_status_handler", topic_data
         if topic_data["status"] == "device_discovered":
             self.network.thirtybirds.send("register_with_server", self.hostname)
+            
 
     def add_to_queue(self, topic, data):
         print "main.add_to_queue", topic, data
