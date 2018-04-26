@@ -489,10 +489,10 @@ class Main(threading.Thread):
                 topic, data = self.queue.get(True)
                 print topic, data
                 if topic[:28] == "event_loop.destination_push_":
-                    self.event_loop.add_to_queue((event_loop.destination_push_,data))
+                    self.event_loop.add_to_queue(("event_loop.destination_push_",data))
                     continue
                 if topic[:25] == "event_loop.location_push_":
-                    self.event_loop.add_to_queue((event_loop.location_push_,data))
+                    self.event_loop.add_to_queue(("event_loop.location_push_",data))
                     continue
                 if topic == "management.system_status_request":
                     network.send("management.system_status_response", self.management.get_system_status(msg))
