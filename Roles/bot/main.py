@@ -325,9 +325,10 @@ class Motor_Control(threading.Thread):
 
 
 class Event_Loop(threading.Thread):
-    def __init__(self, network, motor_control):
+    def __init__(self, hostname, network, motor_control):
         threading.Thread.__init__(self)
         self.motor_control = motor_control
+        self.hostname = hostname
         self.network = network
         self.run_loop_queue = Queue.Queue()
         self.destination = {"x":0.0, "y":0.0, "brush":False, "orientation":0.0,"timestamp":0.0}
@@ -448,7 +449,7 @@ class Main(threading.Thread):
         self.motor_control.daemon = True
         self.motor_control.start()
 
-        self.event_loop = Event_Loop(self.network, self.motor_control)
+        self.event_loop = Event_Loop(hostname, self.network, self.motor_control)
         self.event_loop.daemon = True
         self.event_loop.start()
 
