@@ -459,7 +459,7 @@ class Main(threading.Thread):
         self.network.thirtybirds.subscribe_to_topic("management.scripts_update_request")
         self.network.thirtybirds.subscribe_to_topic("event_loop.destination_push_{}".format(self.hostname))
         self.network.thirtybirds.subscribe_to_topic("event_loop.location_push_{}".format(self.hostname))
-        self.network.thirtybirds.send("register_with_server", self.hostname)
+        
 
 
     def network_message_handler(self, topic_data):
@@ -476,6 +476,8 @@ class Main(threading.Thread):
     def network_status_handler(self, topic_data):
         # this method runs in the thread of the caller, not the tread of Main
         print "Main.network_status_handler", topic_data
+        if topic_data["status"] == "device_discovered":
+            self.network.thirtybirds.send("register_with_server", self.hostname)
 
     def add_to_queue(self, topic, data):
         print "main.add_to_queue", topic, data
@@ -507,8 +509,7 @@ class Main(threading.Thread):
                 if topic == "management.scripts_update_request":
                     network.send("management.scripts_update_response", self.management.scripts_update(msg))
                     continue
-                if topic == "present":
-                    pass
+
                 #if topic == "motion.leases.request":
                 #    self.network.thirtybirds.send("voice_1", self.voices[0].update("pitch_key", data))
 

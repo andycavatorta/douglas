@@ -22,6 +22,7 @@ class Paths(threading.Thread):
         self.network = network
         self.queue = Queue.Queue()
         self.drawing_name = drawing_name
+        self.canvas_size = canvas_size
         self.ingest_paths(drawing_name)
 
     def ingest_paths(self, drawing_name):
@@ -30,25 +31,27 @@ class Paths(threading.Thread):
                 paths_in_td_format = json.load(json_data)
         except Exception as E:
             print "error opening {}".format(drawing_name)
+            print E
             sys.exit()
-        scaling_factor = canvas_size / 1200.0
+        scaling_factor = self.canvas_size / 1200.0
 
         self.paths_in_bot_format = [] # one entry for each path defined
-        for path in paths_in_td_format: # a path is a collection of strokes for one bot
+        for strokes in paths_in_td_format: # a path is a collection of strokes for one bot
+            print "strokes=",strokes
             strokes_in_bot_format = []
-            for strokes in path: 
-                for stroke in strokes: # a stroke is a list of coords
-                    coords_in_bot_format = []
-                    for i in range(len(stroke)):
-                        if i % 2 == 1: # only every other stroke.  must be a pythonic way to do this.
-                            coords_in_bot_format.append(
-                                {
-                                    "x":(stroke[i-1] * scaling_factor) - (canvas_size / 2.0),
-                                    "y":(stroke[i] * scaling_factor) - (canvas_size / 2.0) * scaling_factor,
-                                    "brush_up": True if i == 1 else False,
-                                }
-                            )
-                    strokes_in_bot_format.append(coords_in_bot_format)
+            for stroke in strokes: # a stroke is a list of coords
+                print "stroke=",stroke
+                coords_in_bot_format = []
+                for i in range(len(stroke)):
+                    if i % 2 == 1: # only every other stroke.  must be a pythonic way to do this.
+                        coords_in_bot_format.append(
+                            {
+                                "x":(stroke[i-1] * scaling_factor) - (self.canvas_size / 2.0),
+                                "y":(stroke[i] * scaling_factor) - (self.canvas_size / 2.0) * scaling_factor,
+                                "brush_up": True if i == 1 else False,
+                            }
+                        )
+                strokes_in_bot_format.append(coords_in_bot_format)
             self.paths_in_bot_format.append(strokes_in_bot_format.append(coords_in_bot_format))
         self.paths_cursor = [0] * len(self.paths_in_bot_format)
         self.botname_to_path_ordinal = [False] * len(self.paths_in_bot_format)
@@ -56,7 +59,7 @@ class Paths(threading.Thread):
     # botnames will be assigned to ordinals in the order requested.
     def assign_botname_to_path_ordinal(self, botname):
         for _botname in self.botname_to_path_ordinal:
-            if _botname == False: 
+            if _botname is False: 
                 _botname = botname
                 break
         print "Paths.assign_botname_to_path_ordinal: all names assigned already"
