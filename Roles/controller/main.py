@@ -48,20 +48,21 @@ class Paths(threading.Thread):
                             {
                                 "x":(stroke[i-1] * scaling_factor) - (self.canvas_size / 2.0),
                                 "y":(stroke[i] * scaling_factor) - (self.canvas_size / 2.0) * scaling_factor,
-                                "brush_up": True if i == 1 else False,
+                                "brush": False if i == 1 else True,
                             }
                         )
-                strokes_in_bot_format.append(coords_in_bot_format)
-            self.paths_in_bot_format.append(strokes_in_bot_format.append(coords_in_bot_format))
+                self.paths_in_bot_format.append(coords_in_bot_format)
+            #self.paths_in_bot_format.append(strokes_in_bot_format)
         self.paths_cursor = [0] * len(self.paths_in_bot_format)
         self.botname_to_path_ordinal = [False] * len(self.paths_in_bot_format)
 
     # botnames will be assigned to ordinals in the order requested.
     def assign_botname_to_path_ordinal(self, botname):
-        for _botname in self.botname_to_path_ordinal:
-            if _botname is False: 
-                _botname = botname
-                break
+
+        for i in range(len(self.botname_to_path_ordinal)):
+            if self.botname_to_path_ordinal[i] is False: 
+                self.botname_to_path_ordinal[i] = botname
+                return
         print "Paths.assign_botname_to_path_ordinal: all names assigned already"
 
     def get_next_coords_for_path(self, botname):
@@ -69,14 +70,18 @@ class Paths(threading.Thread):
             bot_ordinal = self.botname_to_path_ordinal.index(botname) 
         except ValueError as e:
             return False
-        try:
-            path = self.paths_in_bot_format[bot_ordinal]
-            path_cursor = self.paths_cursor[bot_ordinal]
-            coords = path[path_cursor]
-            path_cursor += 1
-            return coords
-        except IndexError as e:
-            return False
+        #try:
+        print "bot_ordinal",bot_ordinal
+        path = self.paths_in_bot_format[bot_ordinal]
+        print "path",path
+        path_cursor = self.paths_cursor[bot_ordinal]
+        print "path_cursor",path_cursor
+        coords = path[path_cursor]
+        print "coords",coords
+        path_cursor += 1
+        return coords
+        #except IndexError as e:
+        #    return False
 
     def add_to_queue(self, topic_data):
         print "Paths.add_to_queue", topic_data
@@ -145,7 +150,7 @@ class Main(threading.Thread):
         print "Main started"
 
     def start_serving_coords(self):
-        self.add_to_queue(("start_serving_coords",True))
+        self.add_to_queue("start_serving_coords",True)
 
 
     def network_message_handler(self, topic_data):

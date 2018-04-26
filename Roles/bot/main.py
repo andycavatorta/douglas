@@ -403,10 +403,10 @@ class Event_Loop(threading.Thread):
             try:
                 topic, data = self.run_loop_queue.get(True)
                 print "Event_Loop.run topic, data=", topic, data
+
                 if topic[:25] == "event_loop.location_push_":
                     self.origin = dict(data)
                     self.location = dict(data)
-
                 if topic == "event_loop.destination_push_":
                     self.destination = data
                     vectors = self.convert_cartesian_to_polar(self.origin, self.destination)
@@ -489,10 +489,10 @@ class Main(threading.Thread):
                 topic, data = self.queue.get(True)
                 print topic, data
                 if topic[:28] == "event_loop.destination_push_":
-                    self.event_loop.add_to_queue((topic,data))
+                    self.event_loop.add_to_queue((event_loop.destination_push_,data))
                     continue
                 if topic[:25] == "event_loop.location_push_":
-                    self.event_loop.add_to_queue((topic,data))
+                    self.event_loop.add_to_queue((event_loop.location_push_,data))
                     continue
                 if topic == "management.system_status_request":
                     network.send("management.system_status_response", self.management.get_system_status(msg))
