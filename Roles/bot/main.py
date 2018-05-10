@@ -186,11 +186,9 @@ class Motor_Control(threading.Thread):
         self.motors["left_wheel"].start()
         self.motors["right_wheel"].start()
         self.motors["brush"].start()
-
-        self.motors["left_wheel"].add_to_queue("set_speed", 0.5)
-        self.motors["right_wheel"].add_to_queue("set_speed", 0.5)
-        self.motors["brush"].add_to_queue("set_speed", 0.5)
-
+        self.motors["left_wheel"].add_to_queue("set_speed", 0.25)
+        self.motors["right_wheel"].add_to_queue("set_speed", 0.25)
+        self.motors["brush"].add_to_queue("set_speed", 0.25)
 
     def set_callback(self, callback):
         self.external_callback = callback # not thread safe but it will be okay
@@ -235,7 +233,8 @@ class Motor_Control(threading.Thread):
                 topic, data = self.run_loop_queue.get(True)
                 if topic == "set_vectors":
                     vectors, origin = data
-                    print "Motor_Control.run vectors, origin = ", vectors, origin
+                    print "Motor_Control.run vectors = ", vectors
+                    print "Motor_Control.run origin = " , origin
                     distance = vectors["distance"]
                     target_angle_relative_to_bot = vectors["target_angle_relative_to_bot"]
                     brush = vectors["brush"]
@@ -314,14 +313,9 @@ class Motor_Control(threading.Thread):
                         self.roll_block.get(True) # block until finished
                         # stepper_pulses sends updates to callback
 
-
-
-
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
-
-
 
 
 class Event_Loop(threading.Thread):
@@ -340,12 +334,25 @@ class Event_Loop(threading.Thread):
         print "Event_Loop.add_to_queue topic_data=", topic_data
         self.run_loop_queue.put(topic_data)
 
+    def normalize_angle(self, angle):
+        angle = angle-((int(angle)/360)*360.0)
+        if angle>180.0:
+            angle = angle - 360.0
+        return angle
+
     def convert_cartesian_to_polar(self, origin, destination):
         dx = destination["x"] - origin['x']
         dy = destination["y"] - origin['y']
         radius = np.sqrt(dx**2+dy**2)
         angle_relative_to_cartesian_space = math.degrees(np.arctan2(dy,dx))
         target_angle_relative_to_bot = angle_relative_to_cartesian_space - origin['orientation']
+        target_angle_relative_to_bot = self.normalize_angle(target_angle_relative_to_bot)
+        print "dx=", dx
+        print "dy=", dy
+        print "radius=", radius
+        print "origin['orientation']=", origin['orientation']        
+        print "angle_relative_to_cartesian_space=", angle_relative_to_cartesian_space
+        print "target_angle_relative_to_bot=", target_angle_relative_to_bot
         return {
             "distance":radius, 
             "target_angle_relative_to_bot":target_angle_relative_to_bot, 
@@ -362,7 +369,7 @@ class Event_Loop(threading.Thread):
         #print "Event_Loop.motor_event_callback motor_name, event_type, pulse_odometer= ", motor_name, event_type, distance_or_angle
         if event_type == "rotate":
             angle = self.origin["orientation"] + distance_or_angle
-            angle = angle-((int(angle)/360)*360.0)
+            angle = self.normalize_angle(angle)
             self.location["orientation"] = angle
             #self.origin = dict(self.location)
             #print self.location
@@ -370,26 +377,32 @@ class Event_Loop(threading.Thread):
         if event_type == "finished_rotate":
             #relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.location, 0.0, distance_or_angle)
             angle = self.origin["orientation"] + distance_or_angle
-            angle = angle-((int(angle)/360)*360.0)
+            angle = self.normalize_angle(angle)
             self.location["orientation"] = angle
-            self.origin = dict(self.location)
+            self.origin["orientation"] = angle
+            #self.origin = dict(self.location)
             #print self.location
 
         if event_type == "roll":
             target_angle_relative_to_Cartesian_space = self.location["orientation"]
-            relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.origin, distance_or_angle, target_angle_relative_to_Cartesian_space)
-            self.location["x"] = relative_location["x"]
-            self.location["y"] = relative_location["y"]
+            #relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.origin, distance_or_angle, target_angle_relative_to_Cartesian_space)
+            #self.location["x"] = relative_location["x"]
+            #self.location["y"] = relative_location["y"]
             #print self.location
 
         if event_type == "finished_roll":
             target_angle_relative_to_Cartesian_space = self.location["orientation"]
-            relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.origin, distance_or_angle, target_angle_relative_to_Cartesian_space)
-            self.location["x"] = relative_location["x"]
-            self.location["y"] = relative_location["y"]
+            #relative_location = self.convert_cartesian_origin_and_vector_to_cartesian_position(self.origin, distance_or_angle, target_angle_relative_to_Cartesian_space)
+            #self.location["x"] = relative_location["x"]
+            #self.location["y"] = relative_location["y"]
 
-            self.origin = dict(self.location)
-            print self.location
+            #self.origin = dict(self.location)
+            
+            #print self.location
+            self.origin["x"] = self.destination["x"]
+            self.origin["y"] = self.destination["y"]
+            self.location["x"] = self.destination["x"]
+            self.location["y"] = self.destination["y"]
             #path_server.next_stroke_request
 
             self.network.thirtybirds.send("path_server.next_stroke_request", self.hostname)
@@ -407,15 +420,40 @@ class Event_Loop(threading.Thread):
                 topic, data = self.run_loop_queue.get(True)
                 print "Event_Loop.run topic, data=", topic, data
 
-                if topic[:25] == "event_loop.location_push_":
+                if topic[:25] == "event_loop.location_push":
                     self.origin = dict(data)
                     self.location = dict(data)
-                if topic == "event_loop.destination_push_":
-                    self.destination = data
-                    vectors = self.convert_cartesian_to_polar(self.origin, self.destination)
-                    vectors["brush"] = data["brush"]
-                    print "Event_Loop.run vectors=", vectors
-                    self.motor_control.set_vectors(vectors, self.location)
+                if topic == "event_loop.destination_push":
+                    if self.origin["x"] == data["x"] and self.origin["x"] == data["x"]:
+                        self.network.thirtybirds.send("path_server.next_stroke_request", self.hostname)
+                    else:
+                        self.destination = data
+                        vectors = self.convert_cartesian_to_polar(self.origin, self.destination)
+                        vectors["brush"] = data["brush"]
+                        print "Event_Loop.run vectors=", vectors
+                        self.motor_control.set_vectors(vectors, self.origin)
+
+            except Exception as e:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
+
+
+# to do: rename this later.  bad name
+class Periodic_Requests(threading.Thread):
+    def __init__(self, hostname, network, management):
+        threading.Thread.__init__(self)
+        self.hostname = hostname
+        self.network = network
+        self.management = management
+
+    def run(self):
+        while True:
+            try:
+                system_status = self.management.get_system_status("douglas")
+                if system_status["wifi_strength"] < 60.0:
+                    print system_status
+                    self.network.thirtybirds.send("warning.wifi_strength", (self.hostname, system_status["wifi_strength"]))
+                time.sleep(10)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -460,9 +498,12 @@ class Main(threading.Thread):
         self.network.thirtybirds.subscribe_to_topic("management.system_shutdown_request")
         self.network.thirtybirds.subscribe_to_topic("management.git_pull_request")
         self.network.thirtybirds.subscribe_to_topic("management.scripts_update_request")
-        self.network.thirtybirds.subscribe_to_topic("event_loop.destination_push_{}".format(self.hostname))
-        self.network.thirtybirds.subscribe_to_topic("event_loop.location_push_{}".format(self.hostname))
+        self.network.thirtybirds.subscribe_to_topic("{}_event_loop.destination_push".format(self.hostname))
+        self.network.thirtybirds.subscribe_to_topic("{}_event_loop.location_push".format(self.hostname))
         
+        self.periodic_requests = Periodic_Requests(self.hostname, self.network, self.management)
+        self.periodic_requests.daemon = True
+        self.periodic_requests.start()
 
 
     def network_message_handler(self, topic_data):
@@ -481,7 +522,8 @@ class Main(threading.Thread):
         print "Main.network_status_handler", topic_data
         if topic_data["status"] == "device_discovered":
             self.network.thirtybirds.send("register_with_server", self.hostname)
-            
+            time.sleep(1.0)
+            self.network.thirtybirds.send("path_server.next_stroke_request", self.hostname)
 
     def add_to_queue(self, topic, data):
         print "main.add_to_queue", topic, data
@@ -492,11 +534,12 @@ class Main(threading.Thread):
             try:
                 topic, data = self.queue.get(True)
                 print topic, data
-                if topic[:28] == "event_loop.destination_push_":
-                    self.event_loop.add_to_queue(("event_loop.destination_push_",data))
+
+                if topic == "{}_event_loop.destination_push".format(self.hostname):
+                    self.event_loop.add_to_queue(("event_loop.destination_push",data))
                     continue
-                if topic[:25] == "event_loop.location_push_":
-                    self.event_loop.add_to_queue(("event_loop.location_push_",data))
+                if topic == "{}_event_loop.location_push".format(self.hostname):
+                    self.event_loop.add_to_queue(("event_loop.location_push",data))
                     continue
                 if topic == "management.system_status_request":
                     network.send("management.system_status_response", self.management.get_system_status(msg))
