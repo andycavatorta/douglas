@@ -64,6 +64,7 @@ class Paths(threading.Thread):
             if self.botname_to_path_ordinal[i] is False: 
                 self.botname_to_path_ordinal[i] = botname
                 return
+
         print "Paths.assign_botname_to_path_ordinal: all names assigned already"
 
     def get_next_coords_for_path(self, botname):
@@ -133,6 +134,7 @@ class Main(threading.Thread):
         self.paths = Paths(drawing_name, canvas_size, self.network)
         self.paths.daemon = True
         self.paths.start()
+        self.active = False
 
         #self.leases = Leases(self.network)
         #self.leases.daemon = True
@@ -159,9 +161,23 @@ class Main(threading.Thread):
         self.network.thirtybirds.subscribe_to_topic("warning.wifi_strength")
         print "Main started"
 
-    def serve(self):
-        self.add_to_queue("start_serving_coords",True)
+    def push(self):
+        self.add_to_queue("push_paths",True)
 
+    def go(self):
+        self.add_to_queue("set_active_true",True)
+
+    def pause(self):
+        self.add_to_queue("set_active_false",True)
+
+    def rezero(self):
+        self.add_to_queue("rezero_all_bots",True)
+
+    def rezero(self):
+        self.add_to_queue("rezero_all_bots",True)
+
+    def reboot(self):
+        self.network.thirtybirds.send("management.system_reboot_request", False)
 
     def network_message_handler(self, topic_data):
         # this method runs in the thread of the caller, not the tread of Main
@@ -174,9 +190,11 @@ class Main(threading.Thread):
                 pass
         self.add_to_queue(topic, data)
 
-    def network_status_handler(self, topic_data):
+    def network_status_handler(self, status_ip_hostname):
         # this method runs in the thread of the caller, not the tread of Main
-        print "Main.network_status_handler", topic_data
+        print "Main.network_status_handler", status_ip_hostname
+        if status_ip_hostname["status"] == "device_discovered":
+            self.add_to_queue("register_with_server", status_ip_hostname["hostname"])
 
     def add_to_queue(self, topic, data):
         #print "main.add_to_queue", topic, data
@@ -192,7 +210,10 @@ class Main(threading.Thread):
                 if topic == "mobility_loop.enable_request":
                     pass
                 if topic == "path_server.next_stroke_request":
-                    self.paths.add_to_queue(["path_server.next_stroke_request", data])
+                    if self.active:
+                        self.paths.add_to_queue(["path_server.next_stroke_request", data])
+                    else:
+                        print "Main.run received stroke request from {} but motion not yet activated".format((data))
                     #coords = self.paths.get_next_coords_for_path(data)
                     #if coords is not False:
                     #    topic = "{}_event_loop.destination_push".format(botname)
@@ -211,20 +232,30 @@ class Main(threading.Thread):
                     print "management.git_pull_response = ", data
                 if topic == "management.scripts_update_response":
                     print "management.scripts_update_response = ", data
-                if topic == "start_serving_coords":
+
+                if topic == "set_active_true":
+                    self.active = True
+
+                if topic == "set_active_false":
+                    self.active = False
+
+                if topic == "rezero_all_bots":
+                    self.network.thirtybirds.send("set_location", (0,0))
+
+                if topic == "push_paths":
                     for botname in self.connected_botnames:
                         coords = self.paths.get_next_coords_for_path(botname)
                         if coords is not False:
                             send_topic = "{}_event_loop.destination_push".format(botname)
-                            print "Main.run start_serving_coords, send_topic=", send_topic
+                            print "Main.run push_paths, send_topic=", send_topic
                             self.network.thirtybirds.send(send_topic, coords)
                 if topic == "register_with_server":
                     self.paths.assign_botname_to_path_ordinal(data)
-                    self.connected_botnames.append(data)
+                    if data not in self.connected_botnames:
+                        self.connected_botnames.append(data)
                 if topic == "warning.wifi_strength":
                     hostname, wifi_strength = data
-                    print "{} - wifi signal notification for {}:{}".format(time.strftime("%I:%M:%S")
-,hostname, wifi_strength)
+                    print "{} - wifi signal notification for {}:{}".format(time.strftime("%I:%M:%S"),hostname, wifi_strength)
                 #if topic == "motion.leases.request":
                 #    self.network.thirtybirds.send("voice_1", self.voices[0].update("pitch_key", msg))
 

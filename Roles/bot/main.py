@@ -420,6 +420,9 @@ class Event_Loop(threading.Thread):
                 topic, data = self.run_loop_queue.get(True)
                 print "Event_Loop.run topic, data=", topic, data
 
+                if topic == "set_location":
+                    self.location = {"x":0.0,"y":0.0,"orientation":0.0,"timestamp":0.0}
+
                 if topic[:25] == "event_loop.location_push":
                     self.origin = dict(data)
                     self.location = dict(data)
@@ -450,7 +453,7 @@ class Periodic_Requests(threading.Thread):
         while True:
             try:
                 system_status = self.management.get_system_status("douglas")
-                if system_status["wifi_strength"] < 60.0:
+                if system_status["wifi_strength"] < 65.0:
                     print system_status
                     self.network.thirtybirds.send("warning.wifi_strength", (self.hostname, system_status["wifi_strength"]))
                 time.sleep(10)
@@ -493,6 +496,8 @@ class Main(threading.Thread):
 
         self.motor_control.set_callback(self.event_loop.motor_control_callback)
 
+
+
         self.network.thirtybirds.subscribe_to_topic("management.system_status_request")
         self.network.thirtybirds.subscribe_to_topic("management.system_reboot_request")
         self.network.thirtybirds.subscribe_to_topic("management.system_shutdown_request")
@@ -500,6 +505,8 @@ class Main(threading.Thread):
         self.network.thirtybirds.subscribe_to_topic("management.scripts_update_request")
         self.network.thirtybirds.subscribe_to_topic("{}_event_loop.destination_push".format(self.hostname))
         self.network.thirtybirds.subscribe_to_topic("{}_event_loop.location_push".format(self.hostname))
+
+        self.network.thirtybirds.subscribe_to_topic("set_location")
         
         self.periodic_requests = Periodic_Requests(self.hostname, self.network, self.management)
         self.periodic_requests.daemon = True
@@ -556,6 +563,11 @@ class Main(threading.Thread):
                 if topic == "management.scripts_update_request":
                     network.send("management.scripts_update_response", self.management.scripts_update(msg))
                     continue
+                if topic == "set_location":
+                    self.event_loop.add_to_queue(("set_location",data))
+                    continue
+
+
 
                 #if topic == "motion.leases.request":
                 #    self.network.thirtybirds.send("voice_1", self.voices[0].update("pitch_key", data))
